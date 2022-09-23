@@ -39,3 +39,20 @@ type QueuedProposersProvider interface {
 	// QueuedProposers provides information on the proposers queued to obtain a blinded block.
 	QueuedProposers(ctx context.Context) ([]*v1.QueuedProposer, error)
 }
+
+// DeliveredBidTraceProvider is the interface for providing bid traces for delivered payloads.
+type DeliveredBidTraceProvider interface {
+	Service
+
+	// DeliveredBidTrace provides a bid trace of a delivered payload for a given slot.
+	// Will return nil if the relay did not deliver a bid for the slot.
+	DeliveredBidTrace(ctx context.Context, slot phase0.Slot) (*v1.BidTrace, error)
+}
+
+// ReceivedBidTracesProvider is the interface for obtaining bid traces received by a relay.
+type ReceivedBidTracesProvider interface {
+	Service
+
+	// ReceivedBidTraces provides all bid traces received for a given slot.
+	ReceivedBidTraces(ctx context.Context, slot phase0.Slot) ([]*v1.BidTraceWithTimestamp, error)
+}
