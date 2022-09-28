@@ -24,9 +24,10 @@ import (
 
 func TestBidTraceWithTimestamp(t *testing.T) {
 	tests := []struct {
-		name  string
-		input []byte
-		err   string
+		name     string
+		input    []byte
+		err      string
+		expected []byte
 	}{
 		{
 			name: "Empty",
@@ -39,162 +40,162 @@ func TestBidTraceWithTimestamp(t *testing.T) {
 		},
 		{
 			name:  "SlotMissing",
-			input: []byte(`{"parent_hash":"0x6cd0618e3e13b751506264263b09979e461e35dec0dfbac20d81ece99a43b9dc","block_hash":"0x4c4f7e0a46a4f8b010bc7f899c949b5b9c0c58d510b6a5b46eda48d796a469ed","builder_pubkey":"0xa1dead01e65f0a0eee7b5170223f20c8f0cbf122eac3324d61afbdb33a8885ff8cab2ef514ac2c7698ae0d6289ef27fc","proposer_pubkey":"0x897d53adc5f6993166720dd365f924c0400a61be59cb53589009b8c3ba571032ca319de34e0459f6fcc8734e35a84fd0","proposer_fee_recipient":"0x32a6bcae2dd28f85555467d85600f4ecc8172808","gas_limit":"30000000","gas_used":"12077817","value":"34682404831419603","timestamp":1663234896}`),
+			input: []byte(`{"parent_hash":"0x6cd0618e3e13b751506264263b09979e461e35dec0dfbac20d81ece99a43b9dc","block_hash":"0x4c4f7e0a46a4f8b010bc7f899c949b5b9c0c58d510b6a5b46eda48d796a469ed","builder_pubkey":"0xa1dead01e65f0a0eee7b5170223f20c8f0cbf122eac3324d61afbdb33a8885ff8cab2ef514ac2c7698ae0d6289ef27fc","proposer_pubkey":"0x897d53adc5f6993166720dd365f924c0400a61be59cb53589009b8c3ba571032ca319de34e0459f6fcc8734e35a84fd0","proposer_fee_recipient":"0x32a6bcae2dd28f85555467d85600f4ecc8172808","gas_limit":"30000000","gas_used":"12077817","value":"34682404831419603","timestamp":"1663234896"}`),
 			err:   "slot missing",
 		},
 		{
 			name:  "SlotWrongType",
-			input: []byte(`{"slot":true,"parent_hash":"0x6cd0618e3e13b751506264263b09979e461e35dec0dfbac20d81ece99a43b9dc","block_hash":"0x4c4f7e0a46a4f8b010bc7f899c949b5b9c0c58d510b6a5b46eda48d796a469ed","builder_pubkey":"0xa1dead01e65f0a0eee7b5170223f20c8f0cbf122eac3324d61afbdb33a8885ff8cab2ef514ac2c7698ae0d6289ef27fc","proposer_pubkey":"0x897d53adc5f6993166720dd365f924c0400a61be59cb53589009b8c3ba571032ca319de34e0459f6fcc8734e35a84fd0","proposer_fee_recipient":"0x32a6bcae2dd28f85555467d85600f4ecc8172808","gas_limit":"30000000","gas_used":"12077817","value":"34682404831419603","timestamp":1663234896}`),
+			input: []byte(`{"slot":true,"parent_hash":"0x6cd0618e3e13b751506264263b09979e461e35dec0dfbac20d81ece99a43b9dc","block_hash":"0x4c4f7e0a46a4f8b010bc7f899c949b5b9c0c58d510b6a5b46eda48d796a469ed","builder_pubkey":"0xa1dead01e65f0a0eee7b5170223f20c8f0cbf122eac3324d61afbdb33a8885ff8cab2ef514ac2c7698ae0d6289ef27fc","proposer_pubkey":"0x897d53adc5f6993166720dd365f924c0400a61be59cb53589009b8c3ba571032ca319de34e0459f6fcc8734e35a84fd0","proposer_fee_recipient":"0x32a6bcae2dd28f85555467d85600f4ecc8172808","gas_limit":"30000000","gas_used":"12077817","value":"34682404831419603","timestamp":"1663234896"}`),
 			err:   "invalid JSON: json: cannot unmarshal bool into Go struct field bidTraceWithTimestampJSON.slot of type string",
 		},
 		{
 			name:  "SlotInvalid",
-			input: []byte(`{"slot":"-1","parent_hash":"0x6cd0618e3e13b751506264263b09979e461e35dec0dfbac20d81ece99a43b9dc","block_hash":"0x4c4f7e0a46a4f8b010bc7f899c949b5b9c0c58d510b6a5b46eda48d796a469ed","builder_pubkey":"0xa1dead01e65f0a0eee7b5170223f20c8f0cbf122eac3324d61afbdb33a8885ff8cab2ef514ac2c7698ae0d6289ef27fc","proposer_pubkey":"0x897d53adc5f6993166720dd365f924c0400a61be59cb53589009b8c3ba571032ca319de34e0459f6fcc8734e35a84fd0","proposer_fee_recipient":"0x32a6bcae2dd28f85555467d85600f4ecc8172808","gas_limit":"30000000","gas_used":"12077817","value":"34682404831419603","timestamp":1663234896}`),
+			input: []byte(`{"slot":"-1","parent_hash":"0x6cd0618e3e13b751506264263b09979e461e35dec0dfbac20d81ece99a43b9dc","block_hash":"0x4c4f7e0a46a4f8b010bc7f899c949b5b9c0c58d510b6a5b46eda48d796a469ed","builder_pubkey":"0xa1dead01e65f0a0eee7b5170223f20c8f0cbf122eac3324d61afbdb33a8885ff8cab2ef514ac2c7698ae0d6289ef27fc","proposer_pubkey":"0x897d53adc5f6993166720dd365f924c0400a61be59cb53589009b8c3ba571032ca319de34e0459f6fcc8734e35a84fd0","proposer_fee_recipient":"0x32a6bcae2dd28f85555467d85600f4ecc8172808","gas_limit":"30000000","gas_used":"12077817","value":"34682404831419603","timestamp":"1663234896"}`),
 			err:   "invalid value for slot: strconv.ParseUint: parsing \"-1\": invalid syntax",
 		},
 		{
 			name:  "ParentHashMissing",
-			input: []byte(`{"slot":"3939006","block_hash":"0x4c4f7e0a46a4f8b010bc7f899c949b5b9c0c58d510b6a5b46eda48d796a469ed","builder_pubkey":"0xa1dead01e65f0a0eee7b5170223f20c8f0cbf122eac3324d61afbdb33a8885ff8cab2ef514ac2c7698ae0d6289ef27fc","proposer_pubkey":"0x897d53adc5f6993166720dd365f924c0400a61be59cb53589009b8c3ba571032ca319de34e0459f6fcc8734e35a84fd0","proposer_fee_recipient":"0x32a6bcae2dd28f85555467d85600f4ecc8172808","gas_limit":"30000000","gas_used":"12077817","value":"34682404831419603","timestamp":1663234896}`),
+			input: []byte(`{"slot":"3939006","block_hash":"0x4c4f7e0a46a4f8b010bc7f899c949b5b9c0c58d510b6a5b46eda48d796a469ed","builder_pubkey":"0xa1dead01e65f0a0eee7b5170223f20c8f0cbf122eac3324d61afbdb33a8885ff8cab2ef514ac2c7698ae0d6289ef27fc","proposer_pubkey":"0x897d53adc5f6993166720dd365f924c0400a61be59cb53589009b8c3ba571032ca319de34e0459f6fcc8734e35a84fd0","proposer_fee_recipient":"0x32a6bcae2dd28f85555467d85600f4ecc8172808","gas_limit":"30000000","gas_used":"12077817","value":"34682404831419603","timestamp":"1663234896"}`),
 			err:   "parent hash missing",
 		},
 		{
 			name:  "ParentHashWrongType",
-			input: []byte(`{"slot":"3939006","parent_hash":true,"block_hash":"0x4c4f7e0a46a4f8b010bc7f899c949b5b9c0c58d510b6a5b46eda48d796a469ed","builder_pubkey":"0xa1dead01e65f0a0eee7b5170223f20c8f0cbf122eac3324d61afbdb33a8885ff8cab2ef514ac2c7698ae0d6289ef27fc","proposer_pubkey":"0x897d53adc5f6993166720dd365f924c0400a61be59cb53589009b8c3ba571032ca319de34e0459f6fcc8734e35a84fd0","proposer_fee_recipient":"0x32a6bcae2dd28f85555467d85600f4ecc8172808","gas_limit":"30000000","gas_used":"12077817","value":"34682404831419603","timestamp":1663234896}`),
+			input: []byte(`{"slot":"3939006","parent_hash":true,"block_hash":"0x4c4f7e0a46a4f8b010bc7f899c949b5b9c0c58d510b6a5b46eda48d796a469ed","builder_pubkey":"0xa1dead01e65f0a0eee7b5170223f20c8f0cbf122eac3324d61afbdb33a8885ff8cab2ef514ac2c7698ae0d6289ef27fc","proposer_pubkey":"0x897d53adc5f6993166720dd365f924c0400a61be59cb53589009b8c3ba571032ca319de34e0459f6fcc8734e35a84fd0","proposer_fee_recipient":"0x32a6bcae2dd28f85555467d85600f4ecc8172808","gas_limit":"30000000","gas_used":"12077817","value":"34682404831419603","timestamp":"1663234896"}`),
 			err:   "invalid JSON: json: cannot unmarshal bool into Go struct field bidTraceWithTimestampJSON.parent_hash of type string",
 		},
 		{
 			name:  "ParentHashInvalid",
-			input: []byte(`{"slot":"3939006","parent_hash":"invalid","block_hash":"0x4c4f7e0a46a4f8b010bc7f899c949b5b9c0c58d510b6a5b46eda48d796a469ed","builder_pubkey":"0xa1dead01e65f0a0eee7b5170223f20c8f0cbf122eac3324d61afbdb33a8885ff8cab2ef514ac2c7698ae0d6289ef27fc","proposer_pubkey":"0x897d53adc5f6993166720dd365f924c0400a61be59cb53589009b8c3ba571032ca319de34e0459f6fcc8734e35a84fd0","proposer_fee_recipient":"0x32a6bcae2dd28f85555467d85600f4ecc8172808","gas_limit":"30000000","gas_used":"12077817","value":"34682404831419603","timestamp":1663234896}`),
+			input: []byte(`{"slot":"3939006","parent_hash":"invalid","block_hash":"0x4c4f7e0a46a4f8b010bc7f899c949b5b9c0c58d510b6a5b46eda48d796a469ed","builder_pubkey":"0xa1dead01e65f0a0eee7b5170223f20c8f0cbf122eac3324d61afbdb33a8885ff8cab2ef514ac2c7698ae0d6289ef27fc","proposer_pubkey":"0x897d53adc5f6993166720dd365f924c0400a61be59cb53589009b8c3ba571032ca319de34e0459f6fcc8734e35a84fd0","proposer_fee_recipient":"0x32a6bcae2dd28f85555467d85600f4ecc8172808","gas_limit":"30000000","gas_used":"12077817","value":"34682404831419603","timestamp":"1663234896"}`),
 			err:   "invalid value for parent hash: encoding/hex: invalid byte: U+0069 'i'",
 		},
 		{
 			name:  "ParentHashWrongLength",
-			input: []byte(`{"slot":"3939006","parent_hash":"0xd0618e3e13b751506264263b09979e461e35dec0dfbac20d81ece99a43b9dc","block_hash":"0x4c4f7e0a46a4f8b010bc7f899c949b5b9c0c58d510b6a5b46eda48d796a469ed","builder_pubkey":"0xa1dead01e65f0a0eee7b5170223f20c8f0cbf122eac3324d61afbdb33a8885ff8cab2ef514ac2c7698ae0d6289ef27fc","proposer_pubkey":"0x897d53adc5f6993166720dd365f924c0400a61be59cb53589009b8c3ba571032ca319de34e0459f6fcc8734e35a84fd0","proposer_fee_recipient":"0x32a6bcae2dd28f85555467d85600f4ecc8172808","gas_limit":"30000000","gas_used":"12077817","value":"34682404831419603","timestamp":1663234896}`),
+			input: []byte(`{"slot":"3939006","parent_hash":"0xd0618e3e13b751506264263b09979e461e35dec0dfbac20d81ece99a43b9dc","block_hash":"0x4c4f7e0a46a4f8b010bc7f899c949b5b9c0c58d510b6a5b46eda48d796a469ed","builder_pubkey":"0xa1dead01e65f0a0eee7b5170223f20c8f0cbf122eac3324d61afbdb33a8885ff8cab2ef514ac2c7698ae0d6289ef27fc","proposer_pubkey":"0x897d53adc5f6993166720dd365f924c0400a61be59cb53589009b8c3ba571032ca319de34e0459f6fcc8734e35a84fd0","proposer_fee_recipient":"0x32a6bcae2dd28f85555467d85600f4ecc8172808","gas_limit":"30000000","gas_used":"12077817","value":"34682404831419603","timestamp":"1663234896"}`),
 			err:   "incorrect length for parent hash",
 		},
 		{
 			name:  "BlockHashMissing",
-			input: []byte(`{"slot":"3939006","parent_hash":"0x6cd0618e3e13b751506264263b09979e461e35dec0dfbac20d81ece99a43b9dc","builder_pubkey":"0xa1dead01e65f0a0eee7b5170223f20c8f0cbf122eac3324d61afbdb33a8885ff8cab2ef514ac2c7698ae0d6289ef27fc","proposer_pubkey":"0x897d53adc5f6993166720dd365f924c0400a61be59cb53589009b8c3ba571032ca319de34e0459f6fcc8734e35a84fd0","proposer_fee_recipient":"0x32a6bcae2dd28f85555467d85600f4ecc8172808","gas_limit":"30000000","gas_used":"12077817","value":"34682404831419603","timestamp":1663234896}`),
+			input: []byte(`{"slot":"3939006","parent_hash":"0x6cd0618e3e13b751506264263b09979e461e35dec0dfbac20d81ece99a43b9dc","builder_pubkey":"0xa1dead01e65f0a0eee7b5170223f20c8f0cbf122eac3324d61afbdb33a8885ff8cab2ef514ac2c7698ae0d6289ef27fc","proposer_pubkey":"0x897d53adc5f6993166720dd365f924c0400a61be59cb53589009b8c3ba571032ca319de34e0459f6fcc8734e35a84fd0","proposer_fee_recipient":"0x32a6bcae2dd28f85555467d85600f4ecc8172808","gas_limit":"30000000","gas_used":"12077817","value":"34682404831419603","timestamp":"1663234896"}`),
 			err:   "block hash missing",
 		},
 		{
 			name:  "BlockHashWrongType",
-			input: []byte(`{"slot":"3939006","parent_hash":"0x6cd0618e3e13b751506264263b09979e461e35dec0dfbac20d81ece99a43b9dc","block_hash":true,"builder_pubkey":"0xa1dead01e65f0a0eee7b5170223f20c8f0cbf122eac3324d61afbdb33a8885ff8cab2ef514ac2c7698ae0d6289ef27fc","proposer_pubkey":"0x897d53adc5f6993166720dd365f924c0400a61be59cb53589009b8c3ba571032ca319de34e0459f6fcc8734e35a84fd0","proposer_fee_recipient":"0x32a6bcae2dd28f85555467d85600f4ecc8172808","gas_limit":"30000000","gas_used":"12077817","value":"34682404831419603","timestamp":1663234896}`),
+			input: []byte(`{"slot":"3939006","parent_hash":"0x6cd0618e3e13b751506264263b09979e461e35dec0dfbac20d81ece99a43b9dc","block_hash":true,"builder_pubkey":"0xa1dead01e65f0a0eee7b5170223f20c8f0cbf122eac3324d61afbdb33a8885ff8cab2ef514ac2c7698ae0d6289ef27fc","proposer_pubkey":"0x897d53adc5f6993166720dd365f924c0400a61be59cb53589009b8c3ba571032ca319de34e0459f6fcc8734e35a84fd0","proposer_fee_recipient":"0x32a6bcae2dd28f85555467d85600f4ecc8172808","gas_limit":"30000000","gas_used":"12077817","value":"34682404831419603","timestamp":"1663234896"}`),
 			err:   "invalid JSON: json: cannot unmarshal bool into Go struct field bidTraceWithTimestampJSON.block_hash of type string",
 		},
 		{
 			name:  "BlockHashInvalid",
-			input: []byte(`{"slot":"3939006","parent_hash":"0x6cd0618e3e13b751506264263b09979e461e35dec0dfbac20d81ece99a43b9dc","block_hash":"invalid","builder_pubkey":"0xa1dead01e65f0a0eee7b5170223f20c8f0cbf122eac3324d61afbdb33a8885ff8cab2ef514ac2c7698ae0d6289ef27fc","proposer_pubkey":"0x897d53adc5f6993166720dd365f924c0400a61be59cb53589009b8c3ba571032ca319de34e0459f6fcc8734e35a84fd0","proposer_fee_recipient":"0x32a6bcae2dd28f85555467d85600f4ecc8172808","gas_limit":"30000000","gas_used":"12077817","value":"34682404831419603","timestamp":1663234896}`),
+			input: []byte(`{"slot":"3939006","parent_hash":"0x6cd0618e3e13b751506264263b09979e461e35dec0dfbac20d81ece99a43b9dc","block_hash":"invalid","builder_pubkey":"0xa1dead01e65f0a0eee7b5170223f20c8f0cbf122eac3324d61afbdb33a8885ff8cab2ef514ac2c7698ae0d6289ef27fc","proposer_pubkey":"0x897d53adc5f6993166720dd365f924c0400a61be59cb53589009b8c3ba571032ca319de34e0459f6fcc8734e35a84fd0","proposer_fee_recipient":"0x32a6bcae2dd28f85555467d85600f4ecc8172808","gas_limit":"30000000","gas_used":"12077817","value":"34682404831419603","timestamp":"1663234896"}`),
 			err:   "invalid value for block hash: encoding/hex: invalid byte: U+0069 'i'",
 		},
 		{
 			name:  "BlockHashWrongLength",
-			input: []byte(`{"slot":"3939006","parent_hash":"0x6cd0618e3e13b751506264263b09979e461e35dec0dfbac20d81ece99a43b9dc","block_hash":"0x4f7e0a46a4f8b010bc7f899c949b5b9c0c58d510b6a5b46eda48d796a469ed","builder_pubkey":"0xa1dead01e65f0a0eee7b5170223f20c8f0cbf122eac3324d61afbdb33a8885ff8cab2ef514ac2c7698ae0d6289ef27fc","proposer_pubkey":"0x897d53adc5f6993166720dd365f924c0400a61be59cb53589009b8c3ba571032ca319de34e0459f6fcc8734e35a84fd0","proposer_fee_recipient":"0x32a6bcae2dd28f85555467d85600f4ecc8172808","gas_limit":"30000000","gas_used":"12077817","value":"34682404831419603","timestamp":1663234896}`),
+			input: []byte(`{"slot":"3939006","parent_hash":"0x6cd0618e3e13b751506264263b09979e461e35dec0dfbac20d81ece99a43b9dc","block_hash":"0x4f7e0a46a4f8b010bc7f899c949b5b9c0c58d510b6a5b46eda48d796a469ed","builder_pubkey":"0xa1dead01e65f0a0eee7b5170223f20c8f0cbf122eac3324d61afbdb33a8885ff8cab2ef514ac2c7698ae0d6289ef27fc","proposer_pubkey":"0x897d53adc5f6993166720dd365f924c0400a61be59cb53589009b8c3ba571032ca319de34e0459f6fcc8734e35a84fd0","proposer_fee_recipient":"0x32a6bcae2dd28f85555467d85600f4ecc8172808","gas_limit":"30000000","gas_used":"12077817","value":"34682404831419603","timestamp":"1663234896"}`),
 			err:   "incorrect length for block hash",
 		},
 		{
 			name:  "BuilderPubkeyMissing",
-			input: []byte(`{"slot":"3939006","parent_hash":"0x6cd0618e3e13b751506264263b09979e461e35dec0dfbac20d81ece99a43b9dc","block_hash":"0x4c4f7e0a46a4f8b010bc7f899c949b5b9c0c58d510b6a5b46eda48d796a469ed","proposer_pubkey":"0x897d53adc5f6993166720dd365f924c0400a61be59cb53589009b8c3ba571032ca319de34e0459f6fcc8734e35a84fd0","proposer_fee_recipient":"0x32a6bcae2dd28f85555467d85600f4ecc8172808","gas_limit":"30000000","gas_used":"12077817","value":"34682404831419603","timestamp":1663234896}`),
+			input: []byte(`{"slot":"3939006","parent_hash":"0x6cd0618e3e13b751506264263b09979e461e35dec0dfbac20d81ece99a43b9dc","block_hash":"0x4c4f7e0a46a4f8b010bc7f899c949b5b9c0c58d510b6a5b46eda48d796a469ed","proposer_pubkey":"0x897d53adc5f6993166720dd365f924c0400a61be59cb53589009b8c3ba571032ca319de34e0459f6fcc8734e35a84fd0","proposer_fee_recipient":"0x32a6bcae2dd28f85555467d85600f4ecc8172808","gas_limit":"30000000","gas_used":"12077817","value":"34682404831419603","timestamp":"1663234896"}`),
 			err:   "builder pubkey missing",
 		},
 		{
 			name:  "BuilderPubkeyWrongType",
-			input: []byte(`{"slot":"3939006","parent_hash":"0x6cd0618e3e13b751506264263b09979e461e35dec0dfbac20d81ece99a43b9dc","block_hash":"0x4c4f7e0a46a4f8b010bc7f899c949b5b9c0c58d510b6a5b46eda48d796a469ed","builder_pubkey":true,"proposer_pubkey":"0x897d53adc5f6993166720dd365f924c0400a61be59cb53589009b8c3ba571032ca319de34e0459f6fcc8734e35a84fd0","proposer_fee_recipient":"0x32a6bcae2dd28f85555467d85600f4ecc8172808","gas_limit":"30000000","gas_used":"12077817","value":"34682404831419603","timestamp":1663234896}`),
+			input: []byte(`{"slot":"3939006","parent_hash":"0x6cd0618e3e13b751506264263b09979e461e35dec0dfbac20d81ece99a43b9dc","block_hash":"0x4c4f7e0a46a4f8b010bc7f899c949b5b9c0c58d510b6a5b46eda48d796a469ed","builder_pubkey":true,"proposer_pubkey":"0x897d53adc5f6993166720dd365f924c0400a61be59cb53589009b8c3ba571032ca319de34e0459f6fcc8734e35a84fd0","proposer_fee_recipient":"0x32a6bcae2dd28f85555467d85600f4ecc8172808","gas_limit":"30000000","gas_used":"12077817","value":"34682404831419603","timestamp":"1663234896"}`),
 			err:   "invalid JSON: json: cannot unmarshal bool into Go struct field bidTraceWithTimestampJSON.builder_pubkey of type string",
 		},
 		{
 			name:  "BuilderPubkeyInvalid",
-			input: []byte(`{"slot":"3939006","parent_hash":"0x6cd0618e3e13b751506264263b09979e461e35dec0dfbac20d81ece99a43b9dc","block_hash":"0x4c4f7e0a46a4f8b010bc7f899c949b5b9c0c58d510b6a5b46eda48d796a469ed","builder_pubkey":"invalid","proposer_pubkey":"0x897d53adc5f6993166720dd365f924c0400a61be59cb53589009b8c3ba571032ca319de34e0459f6fcc8734e35a84fd0","proposer_fee_recipient":"0x32a6bcae2dd28f85555467d85600f4ecc8172808","gas_limit":"30000000","gas_used":"12077817","value":"34682404831419603","timestamp":1663234896}`),
+			input: []byte(`{"slot":"3939006","parent_hash":"0x6cd0618e3e13b751506264263b09979e461e35dec0dfbac20d81ece99a43b9dc","block_hash":"0x4c4f7e0a46a4f8b010bc7f899c949b5b9c0c58d510b6a5b46eda48d796a469ed","builder_pubkey":"invalid","proposer_pubkey":"0x897d53adc5f6993166720dd365f924c0400a61be59cb53589009b8c3ba571032ca319de34e0459f6fcc8734e35a84fd0","proposer_fee_recipient":"0x32a6bcae2dd28f85555467d85600f4ecc8172808","gas_limit":"30000000","gas_used":"12077817","value":"34682404831419603","timestamp":"1663234896"}`),
 			err:   "invalid value for builder pubkey: encoding/hex: invalid byte: U+0069 'i'",
 		},
 		{
 			name:  "BuilderPubkeyWrongLength",
-			input: []byte(`{"slot":"3939006","parent_hash":"0x6cd0618e3e13b751506264263b09979e461e35dec0dfbac20d81ece99a43b9dc","block_hash":"0x4c4f7e0a46a4f8b010bc7f899c949b5b9c0c58d510b6a5b46eda48d796a469ed","builder_pubkey":"0xdead01e65f0a0eee7b5170223f20c8f0cbf122eac3324d61afbdb33a8885ff8cab2ef514ac2c7698ae0d6289ef27fc","proposer_pubkey":"0x897d53adc5f6993166720dd365f924c0400a61be59cb53589009b8c3ba571032ca319de34e0459f6fcc8734e35a84fd0","proposer_fee_recipient":"0x32a6bcae2dd28f85555467d85600f4ecc8172808","gas_limit":"30000000","gas_used":"12077817","value":"34682404831419603","timestamp":1663234896}`),
+			input: []byte(`{"slot":"3939006","parent_hash":"0x6cd0618e3e13b751506264263b09979e461e35dec0dfbac20d81ece99a43b9dc","block_hash":"0x4c4f7e0a46a4f8b010bc7f899c949b5b9c0c58d510b6a5b46eda48d796a469ed","builder_pubkey":"0xdead01e65f0a0eee7b5170223f20c8f0cbf122eac3324d61afbdb33a8885ff8cab2ef514ac2c7698ae0d6289ef27fc","proposer_pubkey":"0x897d53adc5f6993166720dd365f924c0400a61be59cb53589009b8c3ba571032ca319de34e0459f6fcc8734e35a84fd0","proposer_fee_recipient":"0x32a6bcae2dd28f85555467d85600f4ecc8172808","gas_limit":"30000000","gas_used":"12077817","value":"34682404831419603","timestamp":"1663234896"}`),
 			err:   "incorrect length for builder pubkey",
 		},
 		{
 			name:  "ProposerPubkeyMissing",
-			input: []byte(`{"slot":"3939006","parent_hash":"0x6cd0618e3e13b751506264263b09979e461e35dec0dfbac20d81ece99a43b9dc","block_hash":"0x4c4f7e0a46a4f8b010bc7f899c949b5b9c0c58d510b6a5b46eda48d796a469ed","builder_pubkey":"0xa1dead01e65f0a0eee7b5170223f20c8f0cbf122eac3324d61afbdb33a8885ff8cab2ef514ac2c7698ae0d6289ef27fc","proposer_fee_recipient":"0x32a6bcae2dd28f85555467d85600f4ecc8172808","gas_limit":"30000000","gas_used":"12077817","value":"34682404831419603","timestamp":1663234896}`),
+			input: []byte(`{"slot":"3939006","parent_hash":"0x6cd0618e3e13b751506264263b09979e461e35dec0dfbac20d81ece99a43b9dc","block_hash":"0x4c4f7e0a46a4f8b010bc7f899c949b5b9c0c58d510b6a5b46eda48d796a469ed","builder_pubkey":"0xa1dead01e65f0a0eee7b5170223f20c8f0cbf122eac3324d61afbdb33a8885ff8cab2ef514ac2c7698ae0d6289ef27fc","proposer_fee_recipient":"0x32a6bcae2dd28f85555467d85600f4ecc8172808","gas_limit":"30000000","gas_used":"12077817","value":"34682404831419603","timestamp":"1663234896"}`),
 			err:   "proposer pubkey missing",
 		},
 		{
 			name:  "ProposerPubkeyWrongType",
-			input: []byte(`{"slot":"3939006","parent_hash":"0x6cd0618e3e13b751506264263b09979e461e35dec0dfbac20d81ece99a43b9dc","block_hash":"0x4c4f7e0a46a4f8b010bc7f899c949b5b9c0c58d510b6a5b46eda48d796a469ed","builder_pubkey":"0xa1dead01e65f0a0eee7b5170223f20c8f0cbf122eac3324d61afbdb33a8885ff8cab2ef514ac2c7698ae0d6289ef27fc","proposer_pubkey":true,"proposer_fee_recipient":"0x32a6bcae2dd28f85555467d85600f4ecc8172808","gas_limit":"30000000","gas_used":"12077817","value":"34682404831419603","timestamp":1663234896}`),
+			input: []byte(`{"slot":"3939006","parent_hash":"0x6cd0618e3e13b751506264263b09979e461e35dec0dfbac20d81ece99a43b9dc","block_hash":"0x4c4f7e0a46a4f8b010bc7f899c949b5b9c0c58d510b6a5b46eda48d796a469ed","builder_pubkey":"0xa1dead01e65f0a0eee7b5170223f20c8f0cbf122eac3324d61afbdb33a8885ff8cab2ef514ac2c7698ae0d6289ef27fc","proposer_pubkey":true,"proposer_fee_recipient":"0x32a6bcae2dd28f85555467d85600f4ecc8172808","gas_limit":"30000000","gas_used":"12077817","value":"34682404831419603","timestamp":"1663234896"}`),
 			err:   "invalid JSON: json: cannot unmarshal bool into Go struct field bidTraceWithTimestampJSON.proposer_pubkey of type string",
 		},
 		{
 			name:  "ProposerPubkeyInvalid",
-			input: []byte(`{"slot":"3939006","parent_hash":"0x6cd0618e3e13b751506264263b09979e461e35dec0dfbac20d81ece99a43b9dc","block_hash":"0x4c4f7e0a46a4f8b010bc7f899c949b5b9c0c58d510b6a5b46eda48d796a469ed","builder_pubkey":"0xa1dead01e65f0a0eee7b5170223f20c8f0cbf122eac3324d61afbdb33a8885ff8cab2ef514ac2c7698ae0d6289ef27fc","proposer_pubkey":"invalid","proposer_fee_recipient":"0x32a6bcae2dd28f85555467d85600f4ecc8172808","gas_limit":"30000000","gas_used":"12077817","value":"34682404831419603","timestamp":1663234896}`),
+			input: []byte(`{"slot":"3939006","parent_hash":"0x6cd0618e3e13b751506264263b09979e461e35dec0dfbac20d81ece99a43b9dc","block_hash":"0x4c4f7e0a46a4f8b010bc7f899c949b5b9c0c58d510b6a5b46eda48d796a469ed","builder_pubkey":"0xa1dead01e65f0a0eee7b5170223f20c8f0cbf122eac3324d61afbdb33a8885ff8cab2ef514ac2c7698ae0d6289ef27fc","proposer_pubkey":"invalid","proposer_fee_recipient":"0x32a6bcae2dd28f85555467d85600f4ecc8172808","gas_limit":"30000000","gas_used":"12077817","value":"34682404831419603","timestamp":"1663234896"}`),
 			err:   "invalid value for proposer pubkey: encoding/hex: invalid byte: U+0069 'i'",
 		},
 		{
 			name:  "ProposerPubkeyWrongLength",
-			input: []byte(`{"slot":"3939006","parent_hash":"0x6cd0618e3e13b751506264263b09979e461e35dec0dfbac20d81ece99a43b9dc","block_hash":"0x4c4f7e0a46a4f8b010bc7f899c949b5b9c0c58d510b6a5b46eda48d796a469ed","builder_pubkey":"0xa1dead01e65f0a0eee7b5170223f20c8f0cbf122eac3324d61afbdb33a8885ff8cab2ef514ac2c7698ae0d6289ef27fc","proposer_pubkey":"0x7d53adc5f6993166720dd365f924c0400a61be59cb53589009b8c3ba571032ca319de34e0459f6fcc8734e35a84fd0","proposer_fee_recipient":"0x32a6bcae2dd28f85555467d85600f4ecc8172808","gas_limit":"30000000","gas_used":"12077817","value":"34682404831419603","timestamp":1663234896}`),
+			input: []byte(`{"slot":"3939006","parent_hash":"0x6cd0618e3e13b751506264263b09979e461e35dec0dfbac20d81ece99a43b9dc","block_hash":"0x4c4f7e0a46a4f8b010bc7f899c949b5b9c0c58d510b6a5b46eda48d796a469ed","builder_pubkey":"0xa1dead01e65f0a0eee7b5170223f20c8f0cbf122eac3324d61afbdb33a8885ff8cab2ef514ac2c7698ae0d6289ef27fc","proposer_pubkey":"0x7d53adc5f6993166720dd365f924c0400a61be59cb53589009b8c3ba571032ca319de34e0459f6fcc8734e35a84fd0","proposer_fee_recipient":"0x32a6bcae2dd28f85555467d85600f4ecc8172808","gas_limit":"30000000","gas_used":"12077817","value":"34682404831419603","timestamp":"1663234896"}`),
 			err:   "incorrect length for proposer pubkey",
 		},
 		{
 			name:  "ProposerFeeRecipientMissing",
-			input: []byte(`{"slot":"3939006","parent_hash":"0x6cd0618e3e13b751506264263b09979e461e35dec0dfbac20d81ece99a43b9dc","block_hash":"0x4c4f7e0a46a4f8b010bc7f899c949b5b9c0c58d510b6a5b46eda48d796a469ed","builder_pubkey":"0xa1dead01e65f0a0eee7b5170223f20c8f0cbf122eac3324d61afbdb33a8885ff8cab2ef514ac2c7698ae0d6289ef27fc","proposer_pubkey":"0x897d53adc5f6993166720dd365f924c0400a61be59cb53589009b8c3ba571032ca319de34e0459f6fcc8734e35a84fd0","gas_limit":"30000000","gas_used":"12077817","value":"34682404831419603","timestamp":1663234896}`),
+			input: []byte(`{"slot":"3939006","parent_hash":"0x6cd0618e3e13b751506264263b09979e461e35dec0dfbac20d81ece99a43b9dc","block_hash":"0x4c4f7e0a46a4f8b010bc7f899c949b5b9c0c58d510b6a5b46eda48d796a469ed","builder_pubkey":"0xa1dead01e65f0a0eee7b5170223f20c8f0cbf122eac3324d61afbdb33a8885ff8cab2ef514ac2c7698ae0d6289ef27fc","proposer_pubkey":"0x897d53adc5f6993166720dd365f924c0400a61be59cb53589009b8c3ba571032ca319de34e0459f6fcc8734e35a84fd0","gas_limit":"30000000","gas_used":"12077817","value":"34682404831419603","timestamp":"1663234896"}`),
 			err:   "proposer fee recipient missing",
 		},
 		{
 			name:  "ProposerFeeRecipientWrongType",
-			input: []byte(`{"slot":"3939006","parent_hash":"0x6cd0618e3e13b751506264263b09979e461e35dec0dfbac20d81ece99a43b9dc","block_hash":"0x4c4f7e0a46a4f8b010bc7f899c949b5b9c0c58d510b6a5b46eda48d796a469ed","builder_pubkey":"0xa1dead01e65f0a0eee7b5170223f20c8f0cbf122eac3324d61afbdb33a8885ff8cab2ef514ac2c7698ae0d6289ef27fc","proposer_pubkey":"0x897d53adc5f6993166720dd365f924c0400a61be59cb53589009b8c3ba571032ca319de34e0459f6fcc8734e35a84fd0","proposer_fee_recipient":true,"gas_limit":"30000000","gas_used":"12077817","value":"34682404831419603","timestamp":1663234896}`),
+			input: []byte(`{"slot":"3939006","parent_hash":"0x6cd0618e3e13b751506264263b09979e461e35dec0dfbac20d81ece99a43b9dc","block_hash":"0x4c4f7e0a46a4f8b010bc7f899c949b5b9c0c58d510b6a5b46eda48d796a469ed","builder_pubkey":"0xa1dead01e65f0a0eee7b5170223f20c8f0cbf122eac3324d61afbdb33a8885ff8cab2ef514ac2c7698ae0d6289ef27fc","proposer_pubkey":"0x897d53adc5f6993166720dd365f924c0400a61be59cb53589009b8c3ba571032ca319de34e0459f6fcc8734e35a84fd0","proposer_fee_recipient":true,"gas_limit":"30000000","gas_used":"12077817","value":"34682404831419603","timestamp":"1663234896"}`),
 			err:   "invalid JSON: json: cannot unmarshal bool into Go struct field bidTraceWithTimestampJSON.proposer_fee_recipient of type string",
 		},
 		{
 			name:  "ProposerFeeRecipientInvalid",
-			input: []byte(`{"slot":"3939006","parent_hash":"0x6cd0618e3e13b751506264263b09979e461e35dec0dfbac20d81ece99a43b9dc","block_hash":"0x4c4f7e0a46a4f8b010bc7f899c949b5b9c0c58d510b6a5b46eda48d796a469ed","builder_pubkey":"0xa1dead01e65f0a0eee7b5170223f20c8f0cbf122eac3324d61afbdb33a8885ff8cab2ef514ac2c7698ae0d6289ef27fc","proposer_pubkey":"0x897d53adc5f6993166720dd365f924c0400a61be59cb53589009b8c3ba571032ca319de34e0459f6fcc8734e35a84fd0","proposer_fee_recipient":"invalid","gas_limit":"30000000","gas_used":"12077817","value":"34682404831419603","timestamp":1663234896}`),
+			input: []byte(`{"slot":"3939006","parent_hash":"0x6cd0618e3e13b751506264263b09979e461e35dec0dfbac20d81ece99a43b9dc","block_hash":"0x4c4f7e0a46a4f8b010bc7f899c949b5b9c0c58d510b6a5b46eda48d796a469ed","builder_pubkey":"0xa1dead01e65f0a0eee7b5170223f20c8f0cbf122eac3324d61afbdb33a8885ff8cab2ef514ac2c7698ae0d6289ef27fc","proposer_pubkey":"0x897d53adc5f6993166720dd365f924c0400a61be59cb53589009b8c3ba571032ca319de34e0459f6fcc8734e35a84fd0","proposer_fee_recipient":"invalid","gas_limit":"30000000","gas_used":"12077817","value":"34682404831419603","timestamp":"1663234896"}`),
 			err:   "invalid value for proposer fee recipient: encoding/hex: invalid byte: U+0069 'i'",
 		},
 		{
 			name:  "ProposerFeeRecipientWrongLength",
-			input: []byte(`{"slot":"3939006","parent_hash":"0x6cd0618e3e13b751506264263b09979e461e35dec0dfbac20d81ece99a43b9dc","block_hash":"0x4c4f7e0a46a4f8b010bc7f899c949b5b9c0c58d510b6a5b46eda48d796a469ed","builder_pubkey":"0xa1dead01e65f0a0eee7b5170223f20c8f0cbf122eac3324d61afbdb33a8885ff8cab2ef514ac2c7698ae0d6289ef27fc","proposer_pubkey":"0x897d53adc5f6993166720dd365f924c0400a61be59cb53589009b8c3ba571032ca319de34e0459f6fcc8734e35a84fd0","proposer_fee_recipient":"0xa6bcae2dd28f85555467d85600f4ecc8172808","gas_limit":"30000000","gas_used":"12077817","value":"34682404831419603","timestamp":1663234896}`),
+			input: []byte(`{"slot":"3939006","parent_hash":"0x6cd0618e3e13b751506264263b09979e461e35dec0dfbac20d81ece99a43b9dc","block_hash":"0x4c4f7e0a46a4f8b010bc7f899c949b5b9c0c58d510b6a5b46eda48d796a469ed","builder_pubkey":"0xa1dead01e65f0a0eee7b5170223f20c8f0cbf122eac3324d61afbdb33a8885ff8cab2ef514ac2c7698ae0d6289ef27fc","proposer_pubkey":"0x897d53adc5f6993166720dd365f924c0400a61be59cb53589009b8c3ba571032ca319de34e0459f6fcc8734e35a84fd0","proposer_fee_recipient":"0xa6bcae2dd28f85555467d85600f4ecc8172808","gas_limit":"30000000","gas_used":"12077817","value":"34682404831419603","timestamp":"1663234896"}`),
 			err:   "incorrect length for proposer fee recipient",
 		},
 		{
 			name:  "GasLimitMissing",
-			input: []byte(`{"slot":"3939006","parent_hash":"0x6cd0618e3e13b751506264263b09979e461e35dec0dfbac20d81ece99a43b9dc","block_hash":"0x4c4f7e0a46a4f8b010bc7f899c949b5b9c0c58d510b6a5b46eda48d796a469ed","builder_pubkey":"0xa1dead01e65f0a0eee7b5170223f20c8f0cbf122eac3324d61afbdb33a8885ff8cab2ef514ac2c7698ae0d6289ef27fc","proposer_pubkey":"0x897d53adc5f6993166720dd365f924c0400a61be59cb53589009b8c3ba571032ca319de34e0459f6fcc8734e35a84fd0","proposer_fee_recipient":"0x32a6bcae2dd28f85555467d85600f4ecc8172808","gas_used":"12077817","value":"34682404831419603","timestamp":1663234896}`),
+			input: []byte(`{"slot":"3939006","parent_hash":"0x6cd0618e3e13b751506264263b09979e461e35dec0dfbac20d81ece99a43b9dc","block_hash":"0x4c4f7e0a46a4f8b010bc7f899c949b5b9c0c58d510b6a5b46eda48d796a469ed","builder_pubkey":"0xa1dead01e65f0a0eee7b5170223f20c8f0cbf122eac3324d61afbdb33a8885ff8cab2ef514ac2c7698ae0d6289ef27fc","proposer_pubkey":"0x897d53adc5f6993166720dd365f924c0400a61be59cb53589009b8c3ba571032ca319de34e0459f6fcc8734e35a84fd0","proposer_fee_recipient":"0x32a6bcae2dd28f85555467d85600f4ecc8172808","gas_used":"12077817","value":"34682404831419603","timestamp":"1663234896"}`),
 			err:   "gas limit missing",
 		},
 		{
 			name:  "GasLimitWrongType",
-			input: []byte(`{"slot":"3939006","parent_hash":"0x6cd0618e3e13b751506264263b09979e461e35dec0dfbac20d81ece99a43b9dc","block_hash":"0x4c4f7e0a46a4f8b010bc7f899c949b5b9c0c58d510b6a5b46eda48d796a469ed","builder_pubkey":"0xa1dead01e65f0a0eee7b5170223f20c8f0cbf122eac3324d61afbdb33a8885ff8cab2ef514ac2c7698ae0d6289ef27fc","proposer_pubkey":"0x897d53adc5f6993166720dd365f924c0400a61be59cb53589009b8c3ba571032ca319de34e0459f6fcc8734e35a84fd0","proposer_fee_recipient":"0x32a6bcae2dd28f85555467d85600f4ecc8172808","gas_limit":true,"gas_used":"12077817","value":"34682404831419603","timestamp":1663234896}`),
+			input: []byte(`{"slot":"3939006","parent_hash":"0x6cd0618e3e13b751506264263b09979e461e35dec0dfbac20d81ece99a43b9dc","block_hash":"0x4c4f7e0a46a4f8b010bc7f899c949b5b9c0c58d510b6a5b46eda48d796a469ed","builder_pubkey":"0xa1dead01e65f0a0eee7b5170223f20c8f0cbf122eac3324d61afbdb33a8885ff8cab2ef514ac2c7698ae0d6289ef27fc","proposer_pubkey":"0x897d53adc5f6993166720dd365f924c0400a61be59cb53589009b8c3ba571032ca319de34e0459f6fcc8734e35a84fd0","proposer_fee_recipient":"0x32a6bcae2dd28f85555467d85600f4ecc8172808","gas_limit":true,"gas_used":"12077817","value":"34682404831419603","timestamp":"1663234896"}`),
 			err:   "invalid JSON: json: cannot unmarshal bool into Go struct field bidTraceWithTimestampJSON.gas_limit of type string",
 		},
 		{
 			name:  "GasLimitInvalid",
-			input: []byte(`{"slot":"3939006","parent_hash":"0x6cd0618e3e13b751506264263b09979e461e35dec0dfbac20d81ece99a43b9dc","block_hash":"0x4c4f7e0a46a4f8b010bc7f899c949b5b9c0c58d510b6a5b46eda48d796a469ed","builder_pubkey":"0xa1dead01e65f0a0eee7b5170223f20c8f0cbf122eac3324d61afbdb33a8885ff8cab2ef514ac2c7698ae0d6289ef27fc","proposer_pubkey":"0x897d53adc5f6993166720dd365f924c0400a61be59cb53589009b8c3ba571032ca319de34e0459f6fcc8734e35a84fd0","proposer_fee_recipient":"0x32a6bcae2dd28f85555467d85600f4ecc8172808","gas_limit":"-1","gas_used":"12077817","value":"34682404831419603","timestamp":1663234896}`),
+			input: []byte(`{"slot":"3939006","parent_hash":"0x6cd0618e3e13b751506264263b09979e461e35dec0dfbac20d81ece99a43b9dc","block_hash":"0x4c4f7e0a46a4f8b010bc7f899c949b5b9c0c58d510b6a5b46eda48d796a469ed","builder_pubkey":"0xa1dead01e65f0a0eee7b5170223f20c8f0cbf122eac3324d61afbdb33a8885ff8cab2ef514ac2c7698ae0d6289ef27fc","proposer_pubkey":"0x897d53adc5f6993166720dd365f924c0400a61be59cb53589009b8c3ba571032ca319de34e0459f6fcc8734e35a84fd0","proposer_fee_recipient":"0x32a6bcae2dd28f85555467d85600f4ecc8172808","gas_limit":"-1","gas_used":"12077817","value":"34682404831419603","timestamp":"1663234896"}`),
 			err:   "invalid value for gas limit: strconv.ParseUint: parsing \"-1\": invalid syntax",
 		},
 		{
 			name:  "GasUsedMissing",
-			input: []byte(`{"slot":"3939006","parent_hash":"0x6cd0618e3e13b751506264263b09979e461e35dec0dfbac20d81ece99a43b9dc","block_hash":"0x4c4f7e0a46a4f8b010bc7f899c949b5b9c0c58d510b6a5b46eda48d796a469ed","builder_pubkey":"0xa1dead01e65f0a0eee7b5170223f20c8f0cbf122eac3324d61afbdb33a8885ff8cab2ef514ac2c7698ae0d6289ef27fc","proposer_pubkey":"0x897d53adc5f6993166720dd365f924c0400a61be59cb53589009b8c3ba571032ca319de34e0459f6fcc8734e35a84fd0","proposer_fee_recipient":"0x32a6bcae2dd28f85555467d85600f4ecc8172808","gas_limit":"30000000","value":"34682404831419603","timestamp":1663234896}`),
+			input: []byte(`{"slot":"3939006","parent_hash":"0x6cd0618e3e13b751506264263b09979e461e35dec0dfbac20d81ece99a43b9dc","block_hash":"0x4c4f7e0a46a4f8b010bc7f899c949b5b9c0c58d510b6a5b46eda48d796a469ed","builder_pubkey":"0xa1dead01e65f0a0eee7b5170223f20c8f0cbf122eac3324d61afbdb33a8885ff8cab2ef514ac2c7698ae0d6289ef27fc","proposer_pubkey":"0x897d53adc5f6993166720dd365f924c0400a61be59cb53589009b8c3ba571032ca319de34e0459f6fcc8734e35a84fd0","proposer_fee_recipient":"0x32a6bcae2dd28f85555467d85600f4ecc8172808","gas_limit":"30000000","value":"34682404831419603","timestamp":"1663234896"}`),
 			err:   "gas used missing",
 		},
 		{
 			name:  "GasUsedWrongType",
-			input: []byte(`{"slot":"3939006","parent_hash":"0x6cd0618e3e13b751506264263b09979e461e35dec0dfbac20d81ece99a43b9dc","block_hash":"0x4c4f7e0a46a4f8b010bc7f899c949b5b9c0c58d510b6a5b46eda48d796a469ed","builder_pubkey":"0xa1dead01e65f0a0eee7b5170223f20c8f0cbf122eac3324d61afbdb33a8885ff8cab2ef514ac2c7698ae0d6289ef27fc","proposer_pubkey":"0x897d53adc5f6993166720dd365f924c0400a61be59cb53589009b8c3ba571032ca319de34e0459f6fcc8734e35a84fd0","proposer_fee_recipient":"0x32a6bcae2dd28f85555467d85600f4ecc8172808","gas_limit":"30000000","gas_used":true,"value":"34682404831419603","timestamp":1663234896}`),
+			input: []byte(`{"slot":"3939006","parent_hash":"0x6cd0618e3e13b751506264263b09979e461e35dec0dfbac20d81ece99a43b9dc","block_hash":"0x4c4f7e0a46a4f8b010bc7f899c949b5b9c0c58d510b6a5b46eda48d796a469ed","builder_pubkey":"0xa1dead01e65f0a0eee7b5170223f20c8f0cbf122eac3324d61afbdb33a8885ff8cab2ef514ac2c7698ae0d6289ef27fc","proposer_pubkey":"0x897d53adc5f6993166720dd365f924c0400a61be59cb53589009b8c3ba571032ca319de34e0459f6fcc8734e35a84fd0","proposer_fee_recipient":"0x32a6bcae2dd28f85555467d85600f4ecc8172808","gas_limit":"30000000","gas_used":true,"value":"34682404831419603","timestamp":"1663234896"}`),
 			err:   "invalid JSON: json: cannot unmarshal bool into Go struct field bidTraceWithTimestampJSON.gas_used of type string",
 		},
 		{
 			name:  "GasUsedInvalid",
-			input: []byte(`{"slot":"3939006","parent_hash":"0x6cd0618e3e13b751506264263b09979e461e35dec0dfbac20d81ece99a43b9dc","block_hash":"0x4c4f7e0a46a4f8b010bc7f899c949b5b9c0c58d510b6a5b46eda48d796a469ed","builder_pubkey":"0xa1dead01e65f0a0eee7b5170223f20c8f0cbf122eac3324d61afbdb33a8885ff8cab2ef514ac2c7698ae0d6289ef27fc","proposer_pubkey":"0x897d53adc5f6993166720dd365f924c0400a61be59cb53589009b8c3ba571032ca319de34e0459f6fcc8734e35a84fd0","proposer_fee_recipient":"0x32a6bcae2dd28f85555467d85600f4ecc8172808","gas_limit":"30000000","gas_used":"-1","value":"34682404831419603","timestamp":1663234896}`),
+			input: []byte(`{"slot":"3939006","parent_hash":"0x6cd0618e3e13b751506264263b09979e461e35dec0dfbac20d81ece99a43b9dc","block_hash":"0x4c4f7e0a46a4f8b010bc7f899c949b5b9c0c58d510b6a5b46eda48d796a469ed","builder_pubkey":"0xa1dead01e65f0a0eee7b5170223f20c8f0cbf122eac3324d61afbdb33a8885ff8cab2ef514ac2c7698ae0d6289ef27fc","proposer_pubkey":"0x897d53adc5f6993166720dd365f924c0400a61be59cb53589009b8c3ba571032ca319de34e0459f6fcc8734e35a84fd0","proposer_fee_recipient":"0x32a6bcae2dd28f85555467d85600f4ecc8172808","gas_limit":"30000000","gas_used":"-1","value":"34682404831419603","timestamp":"1663234896"}`),
 			err:   "invalid value for gas used: strconv.ParseUint: parsing \"-1\": invalid syntax",
 		},
 		{
 			name:  "ValueMissing",
-			input: []byte(`{"slot":"3939006","parent_hash":"0x6cd0618e3e13b751506264263b09979e461e35dec0dfbac20d81ece99a43b9dc","block_hash":"0x4c4f7e0a46a4f8b010bc7f899c949b5b9c0c58d510b6a5b46eda48d796a469ed","builder_pubkey":"0xa1dead01e65f0a0eee7b5170223f20c8f0cbf122eac3324d61afbdb33a8885ff8cab2ef514ac2c7698ae0d6289ef27fc","proposer_pubkey":"0x897d53adc5f6993166720dd365f924c0400a61be59cb53589009b8c3ba571032ca319de34e0459f6fcc8734e35a84fd0","proposer_fee_recipient":"0x32a6bcae2dd28f85555467d85600f4ecc8172808","gas_limit":"30000000","gas_used":"12077817","timestamp":1663234896}`),
+			input: []byte(`{"slot":"3939006","parent_hash":"0x6cd0618e3e13b751506264263b09979e461e35dec0dfbac20d81ece99a43b9dc","block_hash":"0x4c4f7e0a46a4f8b010bc7f899c949b5b9c0c58d510b6a5b46eda48d796a469ed","builder_pubkey":"0xa1dead01e65f0a0eee7b5170223f20c8f0cbf122eac3324d61afbdb33a8885ff8cab2ef514ac2c7698ae0d6289ef27fc","proposer_pubkey":"0x897d53adc5f6993166720dd365f924c0400a61be59cb53589009b8c3ba571032ca319de34e0459f6fcc8734e35a84fd0","proposer_fee_recipient":"0x32a6bcae2dd28f85555467d85600f4ecc8172808","gas_limit":"30000000","gas_used":"12077817","timestamp":"1663234896"}`),
 			err:   "value missing",
 		},
 		{
 			name:  "ValueWrongType",
-			input: []byte(`{"slot":"3939006","parent_hash":"0x6cd0618e3e13b751506264263b09979e461e35dec0dfbac20d81ece99a43b9dc","block_hash":"0x4c4f7e0a46a4f8b010bc7f899c949b5b9c0c58d510b6a5b46eda48d796a469ed","builder_pubkey":"0xa1dead01e65f0a0eee7b5170223f20c8f0cbf122eac3324d61afbdb33a8885ff8cab2ef514ac2c7698ae0d6289ef27fc","proposer_pubkey":"0x897d53adc5f6993166720dd365f924c0400a61be59cb53589009b8c3ba571032ca319de34e0459f6fcc8734e35a84fd0","proposer_fee_recipient":"0x32a6bcae2dd28f85555467d85600f4ecc8172808","gas_limit":"30000000","gas_used":"12077817","value":true,"timestamp":1663234896}`),
+			input: []byte(`{"slot":"3939006","parent_hash":"0x6cd0618e3e13b751506264263b09979e461e35dec0dfbac20d81ece99a43b9dc","block_hash":"0x4c4f7e0a46a4f8b010bc7f899c949b5b9c0c58d510b6a5b46eda48d796a469ed","builder_pubkey":"0xa1dead01e65f0a0eee7b5170223f20c8f0cbf122eac3324d61afbdb33a8885ff8cab2ef514ac2c7698ae0d6289ef27fc","proposer_pubkey":"0x897d53adc5f6993166720dd365f924c0400a61be59cb53589009b8c3ba571032ca319de34e0459f6fcc8734e35a84fd0","proposer_fee_recipient":"0x32a6bcae2dd28f85555467d85600f4ecc8172808","gas_limit":"30000000","gas_used":"12077817","value":true,"timestamp":"1663234896"}`),
 			err:   "invalid JSON: json: cannot unmarshal bool into Go struct field bidTraceWithTimestampJSON.value of type string",
 		},
 		{
 			name:  "ValueInvalid",
-			input: []byte(`{"slot":"3939006","parent_hash":"0x6cd0618e3e13b751506264263b09979e461e35dec0dfbac20d81ece99a43b9dc","block_hash":"0x4c4f7e0a46a4f8b010bc7f899c949b5b9c0c58d510b6a5b46eda48d796a469ed","builder_pubkey":"0xa1dead01e65f0a0eee7b5170223f20c8f0cbf122eac3324d61afbdb33a8885ff8cab2ef514ac2c7698ae0d6289ef27fc","proposer_pubkey":"0x897d53adc5f6993166720dd365f924c0400a61be59cb53589009b8c3ba571032ca319de34e0459f6fcc8734e35a84fd0","proposer_fee_recipient":"0x32a6bcae2dd28f85555467d85600f4ecc8172808","gas_limit":"30000000","gas_used":"12077817","value":"invalid","timestamp":1663234896}`),
+			input: []byte(`{"slot":"3939006","parent_hash":"0x6cd0618e3e13b751506264263b09979e461e35dec0dfbac20d81ece99a43b9dc","block_hash":"0x4c4f7e0a46a4f8b010bc7f899c949b5b9c0c58d510b6a5b46eda48d796a469ed","builder_pubkey":"0xa1dead01e65f0a0eee7b5170223f20c8f0cbf122eac3324d61afbdb33a8885ff8cab2ef514ac2c7698ae0d6289ef27fc","proposer_pubkey":"0x897d53adc5f6993166720dd365f924c0400a61be59cb53589009b8c3ba571032ca319de34e0459f6fcc8734e35a84fd0","proposer_fee_recipient":"0x32a6bcae2dd28f85555467d85600f4ecc8172808","gas_limit":"30000000","gas_used":"12077817","value":"invalid","timestamp":"1663234896"}`),
 			err:   "value invalid",
 		},
 		{
@@ -204,17 +205,22 @@ func TestBidTraceWithTimestamp(t *testing.T) {
 		},
 		{
 			name:  "TimestampWrongType",
-			input: []byte(`{"slot":"3939006","parent_hash":"0x6cd0618e3e13b751506264263b09979e461e35dec0dfbac20d81ece99a43b9dc","block_hash":"0x4c4f7e0a46a4f8b010bc7f899c949b5b9c0c58d510b6a5b46eda48d796a469ed","builder_pubkey":"0xa1dead01e65f0a0eee7b5170223f20c8f0cbf122eac3324d61afbdb33a8885ff8cab2ef514ac2c7698ae0d6289ef27fc","proposer_pubkey":"0x897d53adc5f6993166720dd365f924c0400a61be59cb53589009b8c3ba571032ca319de34e0459f6fcc8734e35a84fd0","proposer_fee_recipient":"0x32a6bcae2dd28f85555467d85600f4ecc8172808","gas_limit":"30000000","gas_used":"12077817","value":"34682404831419603","timestamp":true,"timestamp":1663234896}`),
-			err:   "invalid JSON: json: cannot unmarshal bool into Go struct field bidTraceWithTimestampJSON.timestamp of type int64",
+			input: []byte(`{"slot":"3939006","parent_hash":"0x6cd0618e3e13b751506264263b09979e461e35dec0dfbac20d81ece99a43b9dc","block_hash":"0x4c4f7e0a46a4f8b010bc7f899c949b5b9c0c58d510b6a5b46eda48d796a469ed","builder_pubkey":"0xa1dead01e65f0a0eee7b5170223f20c8f0cbf122eac3324d61afbdb33a8885ff8cab2ef514ac2c7698ae0d6289ef27fc","proposer_pubkey":"0x897d53adc5f6993166720dd365f924c0400a61be59cb53589009b8c3ba571032ca319de34e0459f6fcc8734e35a84fd0","proposer_fee_recipient":"0x32a6bcae2dd28f85555467d85600f4ecc8172808","gas_limit":"30000000","gas_used":"12077817","value":"34682404831419603","timestamp":true}`),
+			err:   "invalid JSON: json: cannot unmarshal bool into Go struct field bidTraceWithTimestampJSON.timestamp of type string",
 		},
 		{
 			name:  "TimestampInvalid",
-			input: []byte(`{"slot":"3939006","parent_hash":"0x6cd0618e3e13b751506264263b09979e461e35dec0dfbac20d81ece99a43b9dc","block_hash":"0x4c4f7e0a46a4f8b010bc7f899c949b5b9c0c58d510b6a5b46eda48d796a469ed","builder_pubkey":"0xa1dead01e65f0a0eee7b5170223f20c8f0cbf122eac3324d61afbdb33a8885ff8cab2ef514ac2c7698ae0d6289ef27fc","proposer_pubkey":"0x897d53adc5f6993166720dd365f924c0400a61be59cb53589009b8c3ba571032ca319de34e0459f6fcc8734e35a84fd0","proposer_fee_recipient":"0x32a6bcae2dd28f85555467d85600f4ecc8172808","gas_limit":"30000000","gas_used":"12077817","value":"34682404831419603","timestamp":99999999999999999999999}`),
-			err:   "invalid JSON: json: cannot unmarshal number 99999999999999999999999 into Go struct field bidTraceWithTimestampJSON.timestamp of type int64",
+			input: []byte(`{"slot":"3939006","parent_hash":"0x6cd0618e3e13b751506264263b09979e461e35dec0dfbac20d81ece99a43b9dc","block_hash":"0x4c4f7e0a46a4f8b010bc7f899c949b5b9c0c58d510b6a5b46eda48d796a469ed","builder_pubkey":"0xa1dead01e65f0a0eee7b5170223f20c8f0cbf122eac3324d61afbdb33a8885ff8cab2ef514ac2c7698ae0d6289ef27fc","proposer_pubkey":"0x897d53adc5f6993166720dd365f924c0400a61be59cb53589009b8c3ba571032ca319de34e0459f6fcc8734e35a84fd0","proposer_fee_recipient":"0x32a6bcae2dd28f85555467d85600f4ecc8172808","gas_limit":"30000000","gas_used":"12077817","value":"34682404831419603","timestamp":"99999999999999999999999"}`),
+			err:   "invalid value for timestamp: strconv.ParseInt: parsing \"99999999999999999999999\": value out of range",
 		},
 		{
 			name:  "Good",
-			input: []byte(`{"slot":"3939006","parent_hash":"0x6cd0618e3e13b751506264263b09979e461e35dec0dfbac20d81ece99a43b9dc","block_hash":"0x4c4f7e0a46a4f8b010bc7f899c949b5b9c0c58d510b6a5b46eda48d796a469ed","builder_pubkey":"0xa1dead01e65f0a0eee7b5170223f20c8f0cbf122eac3324d61afbdb33a8885ff8cab2ef514ac2c7698ae0d6289ef27fc","proposer_pubkey":"0x897d53adc5f6993166720dd365f924c0400a61be59cb53589009b8c3ba571032ca319de34e0459f6fcc8734e35a84fd0","proposer_fee_recipient":"0x32a6bcae2dd28f85555467d85600f4ecc8172808","gas_limit":"30000000","gas_used":"12077817","value":"34682404831419603","timestamp":1663234896}`),
+			input: []byte(`{"slot":"3939006","parent_hash":"0x6cd0618e3e13b751506264263b09979e461e35dec0dfbac20d81ece99a43b9dc","block_hash":"0x4c4f7e0a46a4f8b010bc7f899c949b5b9c0c58d510b6a5b46eda48d796a469ed","builder_pubkey":"0xa1dead01e65f0a0eee7b5170223f20c8f0cbf122eac3324d61afbdb33a8885ff8cab2ef514ac2c7698ae0d6289ef27fc","proposer_pubkey":"0x897d53adc5f6993166720dd365f924c0400a61be59cb53589009b8c3ba571032ca319de34e0459f6fcc8734e35a84fd0","proposer_fee_recipient":"0x32a6bcae2dd28f85555467d85600f4ecc8172808","gas_limit":"30000000","gas_used":"12077817","value":"34682404831419603","timestamp":"1663234896"}`),
+		},
+		{
+			name:     "Old",
+			input:    []byte(`{"slot":"3939006","parent_hash":"0x6cd0618e3e13b751506264263b09979e461e35dec0dfbac20d81ece99a43b9dc","block_hash":"0x4c4f7e0a46a4f8b010bc7f899c949b5b9c0c58d510b6a5b46eda48d796a469ed","builder_pubkey":"0xa1dead01e65f0a0eee7b5170223f20c8f0cbf122eac3324d61afbdb33a8885ff8cab2ef514ac2c7698ae0d6289ef27fc","proposer_pubkey":"0x897d53adc5f6993166720dd365f924c0400a61be59cb53589009b8c3ba571032ca319de34e0459f6fcc8734e35a84fd0","proposer_fee_recipient":"0x32a6bcae2dd28f85555467d85600f4ecc8172808","gas_limit":"30000000","gas_used":"12077817","value":"34682404831419603","timestamp":1663234896}`),
+			expected: []byte(`{"slot":"3939006","parent_hash":"0x6cd0618e3e13b751506264263b09979e461e35dec0dfbac20d81ece99a43b9dc","block_hash":"0x4c4f7e0a46a4f8b010bc7f899c949b5b9c0c58d510b6a5b46eda48d796a469ed","builder_pubkey":"0xa1dead01e65f0a0eee7b5170223f20c8f0cbf122eac3324d61afbdb33a8885ff8cab2ef514ac2c7698ae0d6289ef27fc","proposer_pubkey":"0x897d53adc5f6993166720dd365f924c0400a61be59cb53589009b8c3ba571032ca319de34e0459f6fcc8734e35a84fd0","proposer_fee_recipient":"0x32a6bcae2dd28f85555467d85600f4ecc8172808","gas_limit":"30000000","gas_used":"12077817","value":"34682404831419603","timestamp":"1663234896"}`),
 		},
 	}
 
@@ -228,7 +234,11 @@ func TestBidTraceWithTimestamp(t *testing.T) {
 				require.NoError(t, err)
 				rt, err := json.Marshal(&res)
 				require.NoError(t, err)
-				assert.Equal(t, string(test.input), string(rt))
+				if len(test.expected) != 0 {
+					assert.Equal(t, string(test.expected), string(rt))
+				} else {
+					assert.Equal(t, string(test.input), string(rt))
+				}
 			}
 		})
 	}

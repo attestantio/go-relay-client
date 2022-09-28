@@ -52,6 +52,22 @@ type bidTraceWithTimestampJSON struct {
 	GasLimit             string `json:"gas_limit"`
 	GasUsed              string `json:"gas_used"`
 	Value                string `json:"value"`
+	Timestamp            string `json:"timestamp"`
+}
+
+// oldBidTraceWithTimestampJSON is an old spec representation of the struct.
+// Old representations presented timestamp as an unquoted integer.  Remove
+// this when all implementations have been upgraded.
+type oldBidTraceWithTimestampJSON struct {
+	Slot                 string `json:"slot"`
+	ParentHash           string `json:"parent_hash"`
+	BlockHash            string `json:"block_hash"`
+	BuilderPubkey        string `json:"builder_pubkey"`
+	ProposerPubkey       string `json:"proposer_pubkey"`
+	ProposerFeeRecipient string `json:"proposer_fee_recipient"`
+	GasLimit             string `json:"gas_limit"`
+	GasUsed              string `json:"gas_used"`
+	Value                string `json:"value"`
 	Timestamp            int64  `json:"timestamp"`
 }
 
@@ -67,7 +83,7 @@ func (b *BidTraceWithTimestamp) MarshalJSON() ([]byte, error) {
 		GasLimit:             fmt.Sprintf("%d", b.GasLimit),
 		GasUsed:              fmt.Sprintf("%d", b.GasUsed),
 		Value:                b.Value.String(),
-		Timestamp:            b.Timestamp.Unix(),
+		Timestamp:            fmt.Sprintf("%d", b.Timestamp.Unix()),
 	})
 }
 
@@ -75,12 +91,125 @@ func (b *BidTraceWithTimestamp) MarshalJSON() ([]byte, error) {
 func (b *BidTraceWithTimestamp) UnmarshalJSON(input []byte) error {
 	var data bidTraceWithTimestampJSON
 	if err := json.Unmarshal(input, &data); err != nil {
-		return errors.Wrap(err, "invalid JSON")
+		var oldData oldBidTraceWithTimestampJSON
+		if err2 := json.Unmarshal(input, &oldData); err2 != nil {
+			return errors.Wrap(err, "invalid JSON")
+		}
+		return b.oldUnpack(&oldData)
 	}
 	return b.unpack(&data)
 }
 
 func (b *BidTraceWithTimestamp) unpack(data *bidTraceWithTimestampJSON) error {
+	if data.Slot == "" {
+		return errors.New("slot missing")
+	}
+	slot, err := strconv.ParseUint(data.Slot, 10, 64)
+	if err != nil {
+		return errors.Wrap(err, "invalid value for slot")
+	}
+	b.Slot = phase0.Slot(slot)
+
+	if data.ParentHash == "" {
+		return errors.New("parent hash missing")
+	}
+	parentHash, err := hex.DecodeString(strings.TrimPrefix(data.ParentHash, "0x"))
+	if err != nil {
+		return errors.Wrap(err, "invalid value for parent hash")
+	}
+	if len(parentHash) != phase0.RootLength {
+		return errors.New("incorrect length for parent hash")
+	}
+	copy(b.ParentHash[:], parentHash)
+
+	if data.BlockHash == "" {
+		return errors.New("block hash missing")
+	}
+	blockHash, err := hex.DecodeString(strings.TrimPrefix(data.BlockHash, "0x"))
+	if err != nil {
+		return errors.Wrap(err, "invalid value for block hash")
+	}
+	if len(blockHash) != phase0.RootLength {
+		return errors.New("incorrect length for block hash")
+	}
+	copy(b.BlockHash[:], blockHash)
+
+	if data.BuilderPubkey == "" {
+		return errors.New("builder pubkey missing")
+	}
+	builderPubkey, err := hex.DecodeString(strings.TrimPrefix(data.BuilderPubkey, "0x"))
+	if err != nil {
+		return errors.Wrap(err, "invalid value for builder pubkey")
+	}
+	if len(builderPubkey) != phase0.PublicKeyLength {
+		return errors.New("incorrect length for builder pubkey")
+	}
+	copy(b.BuilderPubkey[:], builderPubkey)
+
+	if data.ProposerPubkey == "" {
+		return errors.New("proposer pubkey missing")
+	}
+	proposerPubkey, err := hex.DecodeString(strings.TrimPrefix(data.ProposerPubkey, "0x"))
+	if err != nil {
+		return errors.Wrap(err, "invalid value for proposer pubkey")
+	}
+	if len(proposerPubkey) != phase0.PublicKeyLength {
+		return errors.New("incorrect length for proposer pubkey")
+	}
+	copy(b.ProposerPubkey[:], proposerPubkey)
+
+	if data.ProposerFeeRecipient == "" {
+		return errors.New("proposer fee recipient missing")
+	}
+	proposerFeeRecipient, err := hex.DecodeString(strings.TrimPrefix(data.ProposerFeeRecipient, "0x"))
+	if err != nil {
+		return errors.Wrap(err, "invalid value for proposer fee recipient")
+	}
+	if len(proposerFeeRecipient) != bellatrix.FeeRecipientLength {
+		return errors.New("incorrect length for proposer fee recipient")
+	}
+	copy(b.ProposerFeeRecipient[:], proposerFeeRecipient)
+
+	if data.GasLimit == "" {
+		return errors.New("gas limit missing")
+	}
+	gasLimit, err := strconv.ParseUint(data.GasLimit, 10, 64)
+	if err != nil {
+		return errors.Wrap(err, "invalid value for gas limit")
+	}
+	b.GasLimit = gasLimit
+
+	if data.GasUsed == "" {
+		return errors.New("gas used missing")
+	}
+	gasUsed, err := strconv.ParseUint(data.GasUsed, 10, 64)
+	if err != nil {
+		return errors.Wrap(err, "invalid value for gas used")
+	}
+	b.GasUsed = gasUsed
+
+	if data.Value == "" {
+		return errors.New("value missing")
+	}
+	value, success := new(big.Int).SetString(data.Value, 10)
+	if !success {
+		return errors.New("value invalid")
+	}
+	b.Value = value
+
+	if data.Timestamp == "" {
+		return errors.New("timestamp missing")
+	}
+	timestamp, err := strconv.ParseInt(data.Timestamp, 10, 64)
+	if err != nil {
+		return errors.Wrap(err, "invalid value for timestamp")
+	}
+	b.Timestamp = time.Unix(timestamp, 0)
+
+	return nil
+}
+
+func (b *BidTraceWithTimestamp) oldUnpack(data *oldBidTraceWithTimestampJSON) error {
 	if data.Slot == "" {
 		return errors.New("slot missing")
 	}
