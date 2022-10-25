@@ -53,6 +53,7 @@ type bidTraceWithTimestampJSON struct {
 	GasUsed              string `json:"gas_used"`
 	Value                string `json:"value"`
 	Timestamp            string `json:"timestamp"`
+	TimestampMS          string `json:"timestamp_ms"`
 }
 
 // oldBidTraceWithTimestampJSON is an old spec representation of the struct.
@@ -84,6 +85,7 @@ func (b *BidTraceWithTimestamp) MarshalJSON() ([]byte, error) {
 		GasUsed:              fmt.Sprintf("%d", b.GasUsed),
 		Value:                b.Value.String(),
 		Timestamp:            fmt.Sprintf("%d", b.Timestamp.Unix()),
+		TimestampMS:          fmt.Sprintf("%d", b.Timestamp.UnixNano()/1e6),
 	})
 }
 
@@ -197,14 +199,22 @@ func (b *BidTraceWithTimestamp) unpack(data *bidTraceWithTimestampJSON) error {
 	}
 	b.Value = value
 
-	if data.Timestamp == "" {
-		return errors.New("timestamp missing")
+	if data.TimestampMS != "" {
+		timestamp, err := strconv.ParseInt(data.TimestampMS, 10, 64)
+		if err != nil {
+			return errors.Wrap(err, "invalid value for timestamp")
+		}
+		b.Timestamp = time.Unix(timestamp/1e3, (timestamp%1e3)*1e6)
+	} else {
+		if data.Timestamp == "" {
+			return errors.New("timestamp missing")
+		}
+		timestamp, err := strconv.ParseInt(data.Timestamp, 10, 64)
+		if err != nil {
+			return errors.Wrap(err, "invalid value for timestamp")
+		}
+		b.Timestamp = time.Unix(timestamp, 0)
 	}
-	timestamp, err := strconv.ParseInt(data.Timestamp, 10, 64)
-	if err != nil {
-		return errors.Wrap(err, "invalid value for timestamp")
-	}
-	b.Timestamp = time.Unix(timestamp, 0)
 
 	return nil
 }
