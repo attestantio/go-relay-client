@@ -22,11 +22,18 @@ import (
 	"github.com/attestantio/go-eth2-client/spec/phase0"
 	v1 "github.com/attestantio/go-relay-client/api/v1"
 	"github.com/pkg/errors"
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/trace"
 )
 
 // DeliveredBidTrace provides a bid trace of a delivered payload for a given slot.
 // Will return nil if the relay did not deliver a bid for the slot.
 func (s *Service) DeliveredBidTrace(ctx context.Context, slot phase0.Slot) (*v1.BidTrace, error) {
+	ctx, span := otel.Tracer("attestantio.go-relay-client.http").Start(ctx, "DeliveredBidTrace", trace.WithAttributes(
+		attribute.Int64("slot", int64(slot)),
+	))
+	defer span.End()
 	started := time.Now()
 
 	url := fmt.Sprintf("/relay/v1/data/bidtraces/proposer_payload_delivered?slot=%d", slot)

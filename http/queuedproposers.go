@@ -21,10 +21,13 @@ import (
 
 	v1 "github.com/attestantio/go-relay-client/api/v1"
 	"github.com/pkg/errors"
+	"go.opentelemetry.io/otel"
 )
 
 // QueuedProposers provides information on the proposers queued to obtain a blinded block.
 func (s *Service) QueuedProposers(ctx context.Context) ([]*v1.QueuedProposer, error) {
+	ctx, span := otel.Tracer("attestantio.go-relay-client.http").Start(ctx, "QueuedProposers")
+	defer span.End()
 	started := time.Now()
 
 	url := "/relay/v1/builder/validators"

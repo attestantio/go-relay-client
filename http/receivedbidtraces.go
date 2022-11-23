@@ -22,10 +22,17 @@ import (
 	"github.com/attestantio/go-eth2-client/spec/phase0"
 	v1 "github.com/attestantio/go-relay-client/api/v1"
 	"github.com/pkg/errors"
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/trace"
 )
 
 // ReceivedBidTraces provides all bid traces received for a given slot.
 func (s *Service) ReceivedBidTraces(ctx context.Context, slot phase0.Slot) ([]*v1.BidTraceWithTimestamp, error) {
+	ctx, span := otel.Tracer("attestantio.go-relay-client.http").Start(ctx, "ReceivedBidTraces", trace.WithAttributes(
+		attribute.Int64("slot", int64(slot)),
+	))
+	defer span.End()
 	started := time.Now()
 
 	url := fmt.Sprintf("/relay/v1/data/bidtraces/builder_blocks_received?slot=%d", slot)
