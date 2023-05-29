@@ -14,17 +14,18 @@
 package http
 
 import (
-	"context"
 	"time"
 
 	"github.com/attestantio/go-eth2-client/metrics"
 	"github.com/prometheus/client_golang/prometheus"
 )
 
-var operationsCounter *prometheus.CounterVec
-var operationsTimer *prometheus.HistogramVec
+var (
+	operationsCounter *prometheus.CounterVec
+	operationsTimer   *prometheus.HistogramVec
+)
 
-func registerMetrics(ctx context.Context, monitor metrics.Service) error {
+func registerMetrics(monitor metrics.Service) error {
 	if operationsCounter != nil {
 		// Already registered.
 		return nil
@@ -34,13 +35,13 @@ func registerMetrics(ctx context.Context, monitor metrics.Service) error {
 		return nil
 	}
 	if monitor.Presenter() == "prometheus" {
-		return registerPrometheusMetrics(ctx)
+		return registerPrometheusMetrics()
 	}
 	return nil
 }
 
 // skipcq: RVV-B0012
-func registerPrometheusMetrics(ctx context.Context) error {
+func registerPrometheusMetrics() error {
 	operationsCounter = prometheus.NewCounterVec(prometheus.CounterOpts{
 		Namespace: "eth_builder_client",
 		Subsystem: "operations",

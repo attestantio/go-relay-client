@@ -56,7 +56,7 @@ func New(ctx context.Context, params ...Parameter) (builderclient.Service, error
 	}
 
 	if parameters.monitor != nil {
-		if err := registerMetrics(ctx, parameters.monitor); err != nil {
+		if err := registerMetrics(parameters.monitor); err != nil {
 			return nil, errors.Wrap(err, "problem registering metrics")
 		}
 	}
