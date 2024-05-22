@@ -39,17 +39,17 @@ func TestQueuedProposer(t *testing.T) {
 		},
 		{
 			name:  "SlotMissing",
-			input: []byte(`{"entry":{"message":{"fee_recipient":"0x388ea662ef2c223ec0b047d41bf3c0f362142ad5","gas_limit":"30000000","timestamp":"1663144444","pubkey":"0xa35e34e6aff03a0e37e0aeeeb2629ba3b503b285ddc75ff2ef8dc854653d833af289f0458cd614e3906ec5e9627b31db"},"signature":"0xb735529068b64c24c7650b08ddb09d543b79030888801176d2708f0e0c863a965fc1ba03f8fb14e5b3b486386e1f147b13848c218e143b513886a0f210c096bd03077fcac658c39402f2ca9075422a6df6b54f17f4141334239f9f9ff8137be0"}}`),
+			input: []byte(`{"entry":{"message":{"fee_recipient":"0x388Ea662EF2c223eC0B047D41Bf3c0f362142ad5","gas_limit":"30000000","timestamp":"1663144444","pubkey":"0xa35e34e6aff03a0e37e0aeeeb2629ba3b503b285ddc75ff2ef8dc854653d833af289f0458cd614e3906ec5e9627b31db"},"signature":"0xb735529068b64c24c7650b08ddb09d543b79030888801176d2708f0e0c863a965fc1ba03f8fb14e5b3b486386e1f147b13848c218e143b513886a0f210c096bd03077fcac658c39402f2ca9075422a6df6b54f17f4141334239f9f9ff8137be0"}}`),
 			err:   "slot missing",
 		},
 		{
 			name:  "SlotWrongType",
-			input: []byte(`{"slot":true,"entry":{"message":{"fee_recipient":"0x388ea662ef2c223ec0b047d41bf3c0f362142ad5","gas_limit":"30000000","timestamp":"1663144444","pubkey":"0xa35e34e6aff03a0e37e0aeeeb2629ba3b503b285ddc75ff2ef8dc854653d833af289f0458cd614e3906ec5e9627b31db"},"signature":"0xb735529068b64c24c7650b08ddb09d543b79030888801176d2708f0e0c863a965fc1ba03f8fb14e5b3b486386e1f147b13848c218e143b513886a0f210c096bd03077fcac658c39402f2ca9075422a6df6b54f17f4141334239f9f9ff8137be0"}}`),
+			input: []byte(`{"slot":true,"entry":{"message":{"fee_recipient":"0x388Ea662EF2c223eC0B047D41Bf3c0f362142ad5","gas_limit":"30000000","timestamp":"1663144444","pubkey":"0xa35e34e6aff03a0e37e0aeeeb2629ba3b503b285ddc75ff2ef8dc854653d833af289f0458cd614e3906ec5e9627b31db"},"signature":"0xb735529068b64c24c7650b08ddb09d543b79030888801176d2708f0e0c863a965fc1ba03f8fb14e5b3b486386e1f147b13848c218e143b513886a0f210c096bd03077fcac658c39402f2ca9075422a6df6b54f17f4141334239f9f9ff8137be0"}}`),
 			err:   "invalid JSON: json: cannot unmarshal bool into Go struct field queuedProposerJSON.slot of type string",
 		},
 		{
 			name:  "SlotInvalid",
-			input: []byte(`{"slot":"true","entry":{"message":{"fee_recipient":"0x388ea662ef2c223ec0b047d41bf3c0f362142ad5","gas_limit":"30000000","timestamp":"1663144444","pubkey":"0xa35e34e6aff03a0e37e0aeeeb2629ba3b503b285ddc75ff2ef8dc854653d833af289f0458cd614e3906ec5e9627b31db"},"signature":"0xb735529068b64c24c7650b08ddb09d543b79030888801176d2708f0e0c863a965fc1ba03f8fb14e5b3b486386e1f147b13848c218e143b513886a0f210c096bd03077fcac658c39402f2ca9075422a6df6b54f17f4141334239f9f9ff8137be0"}}`),
+			input: []byte(`{"slot":"true","entry":{"message":{"fee_recipient":"0x388Ea662EF2c223eC0B047D41Bf3c0f362142ad5","gas_limit":"30000000","timestamp":"1663144444","pubkey":"0xa35e34e6aff03a0e37e0aeeeb2629ba3b503b285ddc75ff2ef8dc854653d833af289f0458cd614e3906ec5e9627b31db"},"signature":"0xb735529068b64c24c7650b08ddb09d543b79030888801176d2708f0e0c863a965fc1ba03f8fb14e5b3b486386e1f147b13848c218e143b513886a0f210c096bd03077fcac658c39402f2ca9075422a6df6b54f17f4141334239f9f9ff8137be0"}}`),
 			err:   "invalid value for slot: strconv.ParseUint: parsing \"true\": invalid syntax",
 		},
 		{
@@ -69,7 +69,7 @@ func TestQueuedProposer(t *testing.T) {
 		},
 		{
 			name:  "Good",
-			input: []byte(`{"slot":"3887273","entry":{"message":{"fee_recipient":"0x388ea662ef2c223ec0b047d41bf3c0f362142ad5","gas_limit":"30000000","timestamp":"1663144444","pubkey":"0xa35e34e6aff03a0e37e0aeeeb2629ba3b503b285ddc75ff2ef8dc854653d833af289f0458cd614e3906ec5e9627b31db"},"signature":"0xb735529068b64c24c7650b08ddb09d543b79030888801176d2708f0e0c863a965fc1ba03f8fb14e5b3b486386e1f147b13848c218e143b513886a0f210c096bd03077fcac658c39402f2ca9075422a6df6b54f17f4141334239f9f9ff8137be0"}}`),
+			input: []byte(`{"slot":"3887273","entry":{"message":{"fee_recipient":"0x388Ea662EF2c223eC0B047D41Bf3c0f362142ad5","gas_limit":"30000000","timestamp":"1663144444","pubkey":"0xa35e34e6aff03a0e37e0aeeeb2629ba3b503b285ddc75ff2ef8dc854653d833af289f0458cd614e3906ec5e9627b31db"},"signature":"0xb735529068b64c24c7650b08ddb09d543b79030888801176d2708f0e0c863a965fc1ba03f8fb14e5b3b486386e1f147b13848c218e143b513886a0f210c096bd03077fcac658c39402f2ca9075422a6df6b54f17f4141334239f9f9ff8137be0"}}`),
 		},
 	}
 
