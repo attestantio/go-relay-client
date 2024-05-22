@@ -54,6 +54,7 @@ func (s *Service) get(ctx context.Context, endpoint string) (ContentType, io.Rea
 		return ContentTypeUnknown, nil, errors.Wrap(err, "failed to create GET request")
 	}
 
+	s.addExtraHeaders(req)
 	// Prefer SSZ if available.
 	req.Header.Set("Accept", "application/octet-stream;q=1,application/json;q=0.9")
 	span.AddEvent("Sending request")
@@ -119,4 +120,10 @@ func contentTypeFromResp(resp *http.Response) (ContentType, error) {
 		return ContentTypeUnknown, fmt.Errorf("malformed content type (%d entries)", len(respContentType))
 	}
 	return ParseFromMediaType(respContentType[0])
+}
+
+func (s *Service) addExtraHeaders(req *http.Request) {
+	for k, v := range s.extraHeaders {
+		req.Header.Add(k, v)
+	}
 }
