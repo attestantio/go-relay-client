@@ -1,4 +1,4 @@
-// Copyright © 2022, 2023 Attestant Limited.
+// Copyright © 2022 - 2024 Attestant Limited.
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
@@ -24,6 +24,7 @@ import (
 type parameters struct {
 	logLevel     zerolog.Level
 	monitor      metrics.Service
+	name         string
 	address      string
 	timeout      time.Duration
 	extraHeaders map[string]string
@@ -51,6 +52,13 @@ func WithLogLevel(logLevel zerolog.Level) Parameter {
 func WithMonitor(monitor metrics.Service) Parameter {
 	return parameterFunc(func(p *parameters) {
 		p.monitor = monitor
+	})
+}
+
+// WithName provides the name for the endpoint.
+func WithName(name string) Parameter {
+	return parameterFunc(func(p *parameters) {
+		p.name = name
 	})
 }
 

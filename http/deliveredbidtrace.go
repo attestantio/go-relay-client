@@ -31,6 +31,7 @@ import (
 // Will return nil if the relay did not deliver a bid for the slot.
 func (s *Service) DeliveredBidTrace(ctx context.Context, slot phase0.Slot) (*v1.BidTrace, error) {
 	ctx, span := otel.Tracer("attestantio.go-relay-client.http").Start(ctx, "DeliveredBidTrace", trace.WithAttributes(
+		//nolint:gosec
 		attribute.Int64("slot", int64(slot)),
 	))
 	defer span.End()

@@ -30,6 +30,7 @@ import (
 // ReceivedBidTraces provides all bid traces received for a given slot.
 func (s *Service) ReceivedBidTraces(ctx context.Context, slot phase0.Slot) ([]*v1.BidTraceWithTimestamp, error) {
 	ctx, span := otel.Tracer("attestantio.go-relay-client.http").Start(ctx, "ReceivedBidTraces", trace.WithAttributes(
+		//nolint:gosec
 		attribute.Int64("slot", int64(slot)),
 	))
 	defer span.End()

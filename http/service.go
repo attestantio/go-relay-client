@@ -1,4 +1,4 @@
-// Copyright © 2022, 2023 Attestant Limited.
+// Copyright © 2022 - 2024 Attestant Limited.
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
@@ -33,6 +33,7 @@ import (
 // Service is an Ethereum 2 client service.
 type Service struct {
 	base         *url.URL
+	name         string
 	address      string
 	client       *http.Client
 	timeout      time.Duration
@@ -100,8 +101,15 @@ func New(ctx context.Context, params ...Parameter) (builderclient.Service, error
 		// Remove the user from the URL.
 		base.User = nil
 	}
+
+	name := parameters.name
+	if name == "" {
+		name = base.String()
+	}
+
 	s := &Service{
 		base:         base,
+		name:         name,
 		address:      base.String(),
 		client:       client,
 		timeout:      parameters.timeout,
@@ -121,7 +129,7 @@ func New(ctx context.Context, params ...Parameter) (builderclient.Service, error
 
 // Name provides the name of the service.
 func (s *Service) Name() string {
-	return s.address
+	return s.name
 }
 
 // Address provides the address for the connection.
