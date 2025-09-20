@@ -135,7 +135,6 @@ linters:
     - depguard
     - dupl
     - err113
-    - execinquery
     - exhaustive
     - exhaustruct
     - forcetypeassert
@@ -144,7 +143,6 @@ linters:
     - gochecknoglobals
     - gocognit
     - goconst
-    - gomnd
     - ireturn
     - inamedparam
     - lll
@@ -155,6 +153,8 @@ linters:
     - nlreturn
     - perfsprint
     - promlinter
+    - recvcheck
+    - tenv
     - varnamelen
     - wrapcheck
     - wsl
