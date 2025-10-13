@@ -46,6 +46,7 @@ func (c *ContentType) MarshalJSON() ([]byte, error) {
 // UnmarshalJSON implements json.Unmarshaler.
 func (c *ContentType) UnmarshalJSON(input []byte) error {
 	var err error
+
 	switch strings.ToUpper(string(input)) {
 	case `"SSZ"`:
 		*c = ContentTypeSSZ
@@ -55,6 +56,7 @@ func (c *ContentType) UnmarshalJSON(input []byte) error {
 		*c = ContentTypeUnknown
 		err = fmt.Errorf("unrecognised content type %s", string(input))
 	}
+
 	return err
 }
 
@@ -63,6 +65,7 @@ func (c ContentType) String() string {
 	if int(c) >= len(contentTypeStrings) {
 		return contentTypeStrings[0]
 	}
+
 	return contentTypeStrings[c]
 }
 

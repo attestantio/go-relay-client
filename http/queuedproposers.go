@@ -19,7 +19,7 @@ import (
 	"fmt"
 	"time"
 
-	v1 "github.com/attestantio/go-relay-client/api/v1"
+	"github.com/attestantio/go-relay-client/api/v1"
 	"github.com/pkg/errors"
 	"go.opentelemetry.io/otel"
 )
@@ -28,6 +28,7 @@ import (
 func (s *Service) QueuedProposers(ctx context.Context) ([]*v1.QueuedProposer, error) {
 	ctx, span := otel.Tracer("attestantio.go-relay-client.http").Start(ctx, "QueuedProposers")
 	defer span.End()
+
 	started := time.Now()
 
 	url := "/relay/v1/builder/validators"
@@ -36,14 +37,17 @@ func (s *Service) QueuedProposers(ctx context.Context) ([]*v1.QueuedProposer, er
 	if err != nil {
 		log.Trace().Str("url", url).Err(err).Msg("Request failed")
 		monitorOperation(s.Address(), "builder bid", false, time.Since(started))
+
 		return nil, errors.Wrap(err, "failed to request queued proposers")
 	}
+
 	if respBodyReader == nil {
 		monitorOperation(s.Address(), "builder bid", false, time.Since(started))
 		return nil, errors.New("failed to obtain queued proposers")
 	}
 
 	res := make([]*v1.QueuedProposer, 0)
+
 	switch contentType {
 	case ContentTypeJSON:
 		if err := json.NewDecoder(respBodyReader).Decode(&res); err != nil {
@@ -54,5 +58,6 @@ func (s *Service) QueuedProposers(ctx context.Context) ([]*v1.QueuedProposer, er
 	}
 
 	monitorOperation(s.Address(), "queued proposers", true, time.Since(started))
+
 	return res, nil
 }

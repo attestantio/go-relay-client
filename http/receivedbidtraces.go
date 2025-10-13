@@ -20,7 +20,7 @@ import (
 	"time"
 
 	"github.com/attestantio/go-eth2-client/spec/phase0"
-	v1 "github.com/attestantio/go-relay-client/api/v1"
+	"github.com/attestantio/go-relay-client/api/v1"
 	"github.com/pkg/errors"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
@@ -30,10 +30,11 @@ import (
 // ReceivedBidTraces provides all bid traces received for a given slot.
 func (s *Service) ReceivedBidTraces(ctx context.Context, slot phase0.Slot) ([]*v1.BidTraceWithTimestamp, error) {
 	ctx, span := otel.Tracer("attestantio.go-relay-client.http").Start(ctx, "ReceivedBidTraces", trace.WithAttributes(
-		//nolint:gosec
+
 		attribute.Int64("slot", int64(slot)),
 	))
 	defer span.End()
+
 	started := time.Now()
 
 	url := fmt.Sprintf("/relay/v1/data/bidtraces/builder_blocks_received?slot=%d", slot)
@@ -42,14 +43,17 @@ func (s *Service) ReceivedBidTraces(ctx context.Context, slot phase0.Slot) ([]*v
 	if err != nil {
 		log.Trace().Str("url", url).Err(err).Msg("Request failed")
 		monitorOperation(s.Address(), "received bid traces", false, time.Since(started))
+
 		return nil, errors.Wrap(err, "failed to request received bid traces")
 	}
+
 	if respBodyReader == nil {
 		monitorOperation(s.Address(), "received bid traces", false, time.Since(started))
 		return nil, errors.New("failed to obtain received bid traces")
 	}
 
 	res := make([]*v1.BidTraceWithTimestamp, 0)
+
 	switch contentType {
 	case ContentTypeJSON:
 		if err := json.NewDecoder(respBodyReader).Decode(&res); err != nil {
@@ -61,5 +65,6 @@ func (s *Service) ReceivedBidTraces(ctx context.Context, slot phase0.Slot) ([]*v
 	}
 
 	monitorOperation(s.Address(), "received bid traces", true, time.Since(started))
+
 	return res, nil
 }
