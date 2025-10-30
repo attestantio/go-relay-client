@@ -18,7 +18,7 @@ import (
 	"fmt"
 	"strconv"
 
-	v1 "github.com/attestantio/go-builder-client/api/v1"
+	builderclientv1 "github.com/attestantio/go-builder-client/api/v1"
 	"github.com/attestantio/go-eth2-client/spec/phase0"
 	"github.com/pkg/errors"
 )
@@ -26,13 +26,13 @@ import (
 // QueuedProposer represents a queued proposer.
 type QueuedProposer struct {
 	Slot  phase0.Slot
-	Entry *v1.SignedValidatorRegistration
+	Entry *builderclientv1.SignedValidatorRegistration
 }
 
 // queuedProposerJSON is the spec representation of the struct.
 type queuedProposerJSON struct {
-	Slot  string                          `json:"slot"`
-	Entry *v1.SignedValidatorRegistration `json:"entry"`
+	Slot  string                                     `json:"slot"`
+	Entry *builderclientv1.SignedValidatorRegistration `json:"entry"`
 }
 
 // MarshalJSON implements json.Marshaler.
@@ -49,25 +49,8 @@ func (q *QueuedProposer) UnmarshalJSON(input []byte) error {
 	if err := json.Unmarshal(input, &data); err != nil {
 		return errors.Wrap(err, "invalid JSON")
 	}
+
 	return q.unpack(&data)
-}
-
-func (q *QueuedProposer) unpack(data *queuedProposerJSON) error {
-	if data.Slot == "" {
-		return errors.New("slot missing")
-	}
-	slot, err := strconv.ParseUint(data.Slot, 10, 64)
-	if err != nil {
-		return errors.Wrap(err, "invalid value for slot")
-	}
-	q.Slot = phase0.Slot(slot)
-
-	if data.Entry == nil {
-		return errors.New("entry missing")
-	}
-	q.Entry = data.Entry
-
-	return nil
 }
 
 // String returns a string version of the structure.
@@ -76,5 +59,27 @@ func (q *QueuedProposer) String() string {
 	if err != nil {
 		return fmt.Sprintf("ERR: %v", err)
 	}
+
 	return string(data)
+}
+
+func (q *QueuedProposer) unpack(data *queuedProposerJSON) error {
+	if data.Slot == "" {
+		return errors.New("slot missing")
+	}
+
+	slot, err := strconv.ParseUint(data.Slot, 10, 64)
+	if err != nil {
+		return errors.Wrap(err, "invalid value for slot")
+	}
+
+	q.Slot = phase0.Slot(slot)
+
+	if data.Entry == nil {
+		return errors.New("entry missing")
+	}
+
+	q.Entry = data.Entry
+
+	return nil
 }

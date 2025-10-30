@@ -17,7 +17,7 @@ import (
 	"context"
 
 	"github.com/attestantio/go-eth2-client/spec/phase0"
-	v1 "github.com/attestantio/go-relay-client/api/v1"
+	"github.com/attestantio/go-relay-client/api/v1"
 )
 
 // Service is the service providing a connection to an MEV relay.
@@ -32,7 +32,7 @@ type Service interface {
 	Pubkey() *phase0.BLSPubKey
 }
 
-// QueuedProposersProviders is the interface for providing queued proposer information.
+// QueuedProposersProvider is the interface for providing queued proposer information.
 type QueuedProposersProvider interface {
 	Service
 

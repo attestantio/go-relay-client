@@ -40,17 +40,20 @@ func (s *Service) get(ctx context.Context, endpoint string) (ContentType, io.Rea
 	log := log.With().Str("id", fmt.Sprintf("%02x", rand.Int31())).Str("endpoint", endpoint).Str("address", s.address).Logger()
 	log.Trace().Msg("GET request")
 
-	url, err := url.Parse(fmt.Sprintf("%s%s", strings.TrimSuffix(s.base.String(), "/"), endpoint))
+	requestURL, err := url.Parse(fmt.Sprintf("%s%s", strings.TrimSuffix(s.base.String(), "/"), endpoint))
 	if err != nil {
 		return ContentTypeUnknown, nil, errors.Wrap(err, "invalid endpoint")
 	}
-	span.SetAttributes(attribute.String("url", url.String()))
+
+	span.SetAttributes(attribute.String("url", requestURL.String()))
 
 	opCtx, cancel := context.WithTimeout(ctx, s.timeout)
-	req, err := http.NewRequestWithContext(opCtx, http.MethodGet, url.String(), nil)
+
+	req, err := http.NewRequestWithContext(opCtx, http.MethodGet, requestURL.String(), nil)
 	if err != nil {
 		cancel()
 		span.SetStatus(codes.Error, "Failed to create request")
+
 		return ContentTypeUnknown, nil, errors.Wrap(err, "failed to create GET request")
 	}
 
@@ -58,13 +61,21 @@ func (s *Service) get(ctx context.Context, endpoint string) (ContentType, io.Rea
 	// Prefer SSZ if available.
 	req.Header.Set("Accept", "application/octet-stream;q=1,application/json;q=0.9")
 	span.AddEvent("Sending request")
+
 	resp, err := s.client.Do(req)
 	if err != nil {
 		cancel()
 		span.SetStatus(codes.Error, "Request failed")
+
 		return ContentTypeUnknown, nil, errors.Wrap(err, "failed to call GET endpoint")
 	}
-	defer resp.Body.Close()
+
+	defer func() {
+		if err := resp.Body.Close(); err != nil {
+			log.Warn().Err(err).Msg("Failed to close response body")
+		}
+	}()
+
 	log = log.With().Int("status_code", resp.StatusCode).Logger()
 
 	if resp.StatusCode == http.StatusNotFound {
@@ -72,6 +83,7 @@ func (s *Service) get(ctx context.Context, endpoint string) (ContentType, io.Rea
 		cancel()
 		span.RecordError(errors.New("endpoint not found"))
 		log.Debug().Msg("Endpoint not found")
+
 		return ContentTypeUnknown, nil, nil
 	}
 
@@ -80,6 +92,7 @@ func (s *Service) get(ctx context.Context, endpoint string) (ContentType, io.Rea
 		cancel()
 		span.AddEvent("Received empty response")
 		log.Trace().Msg("Endpoint returned no content")
+
 		return ContentTypeUnknown, nil, nil
 	}
 
@@ -87,24 +100,30 @@ func (s *Service) get(ctx context.Context, endpoint string) (ContentType, io.Rea
 	if err != nil {
 		cancel()
 		span.SetStatus(codes.Error, "Failed to read response")
+
 		return ContentTypeUnknown, nil, errors.Wrap(err, "failed to read GET response")
 	}
+
 	span.AddEvent("Received response", trace.WithAttributes(attribute.Int("size", len(data))))
 
 	statusFamily := resp.StatusCode / 100
 	if statusFamily != 2 {
 		cancel()
+
 		trimmedResponse := bytes.ReplaceAll(bytes.ReplaceAll(data, []byte{0x0a}, []byte{}), []byte{0x0d}, []byte{})
 		log.Debug().Int("status_code", resp.StatusCode).RawJSON("response", trimmedResponse).Msg("GET failed")
 		span.SetStatus(codes.Error, fmt.Sprintf("Status code %d", resp.StatusCode))
+
 		return ContentTypeUnknown, nil, fmt.Errorf("GET failed with status %d: %s", resp.StatusCode, string(data))
 	}
+
 	cancel()
 
 	contentType, err := contentTypeFromResp(resp)
 	if err != nil {
 		// For now, assume that unknown type is JSON.
 		log.Debug().Err(err).Msg("Failed to obtain content type; assuming JSON")
+
 		contentType = ContentTypeJSON
 	}
 
@@ -116,9 +135,11 @@ func contentTypeFromResp(resp *http.Response) (ContentType, error) {
 	if !exists {
 		return ContentTypeUnknown, errors.New("no content type supplied in response")
 	}
+
 	if len(respContentType) != 1 {
 		return ContentTypeUnknown, fmt.Errorf("malformed content type (%d entries)", len(respContentType))
 	}
+
 	return ParseFromMediaType(respContentType[0])
 }
 

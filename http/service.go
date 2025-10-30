@@ -82,6 +82,7 @@ func New(ctx context.Context, params ...Parameter) (builderclient.Service, error
 	if !strings.HasPrefix(address, "http") {
 		address = fmt.Sprintf("http://%s", parameters.address)
 	}
+
 	base, err := url.Parse(address)
 	if err != nil {
 		return nil, errors.Wrap(err, "invalid URL")
@@ -91,10 +92,12 @@ func New(ctx context.Context, params ...Parameter) (builderclient.Service, error
 	var pubkey *phase0.BLSPubKey
 	if base.User != nil && base.User.Username() != "" {
 		key := phase0.BLSPubKey{}
+
 		data, err := hex.DecodeString(strings.TrimPrefix(base.User.Username(), "0x"))
 		if err != nil {
 			return nil, errors.Wrap(err, fmt.Sprintf("failed to parse public key %s", base.User.Username()))
 		}
+
 		copy(key[:], data)
 		pubkey = &key
 
@@ -137,10 +140,10 @@ func (s *Service) Address() string {
 	return s.address
 }
 
-// close closes the service, freeing up resources.
-func (s *Service) close() {}
-
 // Pubkey returns the public key of the builder (if any).
 func (s *Service) Pubkey() *phase0.BLSPubKey {
 	return s.pubkey
 }
+
+// close closes the service, freeing up resources.
+func (*Service) close() {}

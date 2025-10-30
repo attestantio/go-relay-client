@@ -97,106 +97,141 @@ func (b *BidTraceWithTimestamp) UnmarshalJSON(input []byte) error {
 		if err2 := json.Unmarshal(input, &oldData); err2 != nil {
 			return errors.Wrap(err, "invalid JSON")
 		}
+
 		return b.oldUnpack(&oldData)
 	}
+
 	return b.unpack(&data)
 }
 
-func (b *BidTraceWithTimestamp) unpack(data *bidTraceWithTimestampJSON) error {
+// String returns a string version of the structure.
+func (b *BidTraceWithTimestamp) String() string {
+	data, err := json.Marshal(b)
+	if err != nil {
+		return fmt.Sprintf("ERR: %v", err)
+	}
+
+	return string(data)
+}
+
+func (b *BidTraceWithTimestamp) unpack(data *bidTraceWithTimestampJSON) error{
 	if data.Slot == "" {
 		return errors.New("slot missing")
 	}
+
 	slot, err := strconv.ParseUint(data.Slot, 10, 64)
 	if err != nil {
 		return errors.Wrap(err, "invalid value for slot")
 	}
+
 	b.Slot = phase0.Slot(slot)
 
 	if data.ParentHash == "" {
 		return errors.New("parent hash missing")
 	}
+
 	parentHash, err := hex.DecodeString(strings.TrimPrefix(data.ParentHash, "0x"))
 	if err != nil {
 		return errors.Wrap(err, "invalid value for parent hash")
 	}
+
 	if len(parentHash) != phase0.RootLength {
 		return errors.New("incorrect length for parent hash")
 	}
+
 	copy(b.ParentHash[:], parentHash)
 
 	if data.BlockHash == "" {
 		return errors.New("block hash missing")
 	}
+
 	blockHash, err := hex.DecodeString(strings.TrimPrefix(data.BlockHash, "0x"))
 	if err != nil {
 		return errors.Wrap(err, "invalid value for block hash")
 	}
+
 	if len(blockHash) != phase0.RootLength {
 		return errors.New("incorrect length for block hash")
 	}
+
 	copy(b.BlockHash[:], blockHash)
 
 	if data.BuilderPubkey == "" {
 		return errors.New("builder pubkey missing")
 	}
+
 	builderPubkey, err := hex.DecodeString(strings.TrimPrefix(data.BuilderPubkey, "0x"))
 	if err != nil {
 		return errors.Wrap(err, "invalid value for builder pubkey")
 	}
+
 	if len(builderPubkey) != phase0.PublicKeyLength {
 		return errors.New("incorrect length for builder pubkey")
 	}
+
 	copy(b.BuilderPubkey[:], builderPubkey)
 
 	if data.ProposerPubkey == "" {
 		return errors.New("proposer pubkey missing")
 	}
+
 	proposerPubkey, err := hex.DecodeString(strings.TrimPrefix(data.ProposerPubkey, "0x"))
 	if err != nil {
 		return errors.Wrap(err, "invalid value for proposer pubkey")
 	}
+
 	if len(proposerPubkey) != phase0.PublicKeyLength {
 		return errors.New("incorrect length for proposer pubkey")
 	}
+
 	copy(b.ProposerPubkey[:], proposerPubkey)
 
 	if data.ProposerFeeRecipient == "" {
 		return errors.New("proposer fee recipient missing")
 	}
+
 	proposerFeeRecipient, err := hex.DecodeString(strings.TrimPrefix(data.ProposerFeeRecipient, "0x"))
 	if err != nil {
 		return errors.Wrap(err, "invalid value for proposer fee recipient")
 	}
+
 	if len(proposerFeeRecipient) != bellatrix.FeeRecipientLength {
 		return errors.New("incorrect length for proposer fee recipient")
 	}
+
 	copy(b.ProposerFeeRecipient[:], proposerFeeRecipient)
 
 	if data.GasLimit == "" {
 		return errors.New("gas limit missing")
 	}
+
 	gasLimit, err := strconv.ParseUint(data.GasLimit, 10, 64)
 	if err != nil {
 		return errors.Wrap(err, "invalid value for gas limit")
 	}
+
 	b.GasLimit = gasLimit
 
 	if data.GasUsed == "" {
 		return errors.New("gas used missing")
 	}
+
 	gasUsed, err := strconv.ParseUint(data.GasUsed, 10, 64)
 	if err != nil {
 		return errors.Wrap(err, "invalid value for gas used")
 	}
+
 	b.GasUsed = gasUsed
 
 	if data.Value == "" {
 		return errors.New("value missing")
 	}
+
 	value, success := new(big.Int).SetString(data.Value, 10)
 	if !success {
 		return errors.New("value invalid")
 	}
+
 	b.Value = value
 
 	if data.TimestampMS != "" {
@@ -204,15 +239,18 @@ func (b *BidTraceWithTimestamp) unpack(data *bidTraceWithTimestampJSON) error {
 		if err != nil {
 			return errors.Wrap(err, "invalid value for timestamp")
 		}
+
 		b.Timestamp = time.Unix(timestamp/1e3, (timestamp%1e3)*1e6)
 	} else {
 		if data.Timestamp == "" {
 			return errors.New("timestamp missing")
 		}
+
 		timestamp, err := strconv.ParseInt(data.Timestamp, 10, 64)
 		if err != nil {
 			return errors.Wrap(err, "invalid value for timestamp")
 		}
+
 		b.Timestamp = time.Unix(timestamp, 0)
 	}
 
@@ -223,112 +261,127 @@ func (b *BidTraceWithTimestamp) oldUnpack(data *oldBidTraceWithTimestampJSON) er
 	if data.Slot == "" {
 		return errors.New("slot missing")
 	}
+
 	slot, err := strconv.ParseUint(data.Slot, 10, 64)
 	if err != nil {
 		return errors.Wrap(err, "invalid value for slot")
 	}
+
 	b.Slot = phase0.Slot(slot)
 
 	if data.ParentHash == "" {
 		return errors.New("parent hash missing")
 	}
+
 	parentHash, err := hex.DecodeString(strings.TrimPrefix(data.ParentHash, "0x"))
 	if err != nil {
 		return errors.Wrap(err, "invalid value for parent hash")
 	}
+
 	if len(parentHash) != phase0.RootLength {
 		return errors.New("incorrect length for parent hash")
 	}
+
 	copy(b.ParentHash[:], parentHash)
 
 	if data.BlockHash == "" {
 		return errors.New("block hash missing")
 	}
+
 	blockHash, err := hex.DecodeString(strings.TrimPrefix(data.BlockHash, "0x"))
 	if err != nil {
 		return errors.Wrap(err, "invalid value for block hash")
 	}
+
 	if len(blockHash) != phase0.RootLength {
 		return errors.New("incorrect length for block hash")
 	}
+
 	copy(b.BlockHash[:], blockHash)
 
 	if data.BuilderPubkey == "" {
 		return errors.New("builder pubkey missing")
 	}
+
 	builderPubkey, err := hex.DecodeString(strings.TrimPrefix(data.BuilderPubkey, "0x"))
 	if err != nil {
 		return errors.Wrap(err, "invalid value for builder pubkey")
 	}
+
 	if len(builderPubkey) != phase0.PublicKeyLength {
 		return errors.New("incorrect length for builder pubkey")
 	}
+
 	copy(b.BuilderPubkey[:], builderPubkey)
 
 	if data.ProposerPubkey == "" {
 		return errors.New("proposer pubkey missing")
 	}
+
 	proposerPubkey, err := hex.DecodeString(strings.TrimPrefix(data.ProposerPubkey, "0x"))
 	if err != nil {
 		return errors.Wrap(err, "invalid value for proposer pubkey")
 	}
+
 	if len(proposerPubkey) != phase0.PublicKeyLength {
 		return errors.New("incorrect length for proposer pubkey")
 	}
+
 	copy(b.ProposerPubkey[:], proposerPubkey)
 
 	if data.ProposerFeeRecipient == "" {
 		return errors.New("proposer fee recipient missing")
 	}
+
 	proposerFeeRecipient, err := hex.DecodeString(strings.TrimPrefix(data.ProposerFeeRecipient, "0x"))
 	if err != nil {
 		return errors.Wrap(err, "invalid value for proposer fee recipient")
 	}
+
 	if len(proposerFeeRecipient) != bellatrix.FeeRecipientLength {
 		return errors.New("incorrect length for proposer fee recipient")
 	}
+
 	copy(b.ProposerFeeRecipient[:], proposerFeeRecipient)
 
 	if data.GasLimit == "" {
 		return errors.New("gas limit missing")
 	}
+
 	gasLimit, err := strconv.ParseUint(data.GasLimit, 10, 64)
 	if err != nil {
 		return errors.Wrap(err, "invalid value for gas limit")
 	}
+
 	b.GasLimit = gasLimit
 
 	if data.GasUsed == "" {
 		return errors.New("gas used missing")
 	}
+
 	gasUsed, err := strconv.ParseUint(data.GasUsed, 10, 64)
 	if err != nil {
 		return errors.Wrap(err, "invalid value for gas used")
 	}
+
 	b.GasUsed = gasUsed
 
 	if data.Value == "" {
 		return errors.New("value missing")
 	}
+
 	value, success := new(big.Int).SetString(data.Value, 10)
 	if !success {
 		return errors.New("value invalid")
 	}
+
 	b.Value = value
 
 	if data.Timestamp == 0 {
 		return errors.New("timestamp missing")
 	}
+
 	b.Timestamp = time.Unix(data.Timestamp, 0)
 
 	return nil
-}
-
-// String returns a string version of the structure.
-func (b *BidTraceWithTimestamp) String() string {
-	data, err := json.Marshal(b)
-	if err != nil {
-		return fmt.Sprintf("ERR: %v", err)
-	}
-	return string(data)
 }
