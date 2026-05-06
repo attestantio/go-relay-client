@@ -20,25 +20,31 @@ import (
 	"time"
 
 	"github.com/attestantio/go-eth2-client/spec/phase0"
-	"github.com/attestantio/go-relay-client/api/v1"
+	v1 "github.com/attestantio/go-relay-client/api/v1"
 	"github.com/pkg/errors"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/trace"
 )
 
-// DeliveredBidTrace provides a bid trace of a delivered payload for a given slot.
-// Will return nil if the relay did not deliver a bid for the slot.
-func (s *Service) DeliveredBidTrace(ctx context.Context, slot phase0.Slot) (*v1.BidTrace, error) {
+// DeliveredBidTrace provides bid traces of delivered payloads for a given slot.
+// Use limit=0 to query a single slot, or limit>0 to retrieve up to that many results starting from the given slot.
+// Will return nil if the relay did not deliver any bids.
+func (s *Service) DeliveredBidTrace(ctx context.Context, slot phase0.Slot, limit int) ([]*v1.BidTrace, error) {
 	ctx, span := otel.Tracer("attestantio.go-relay-client.http").Start(ctx, "DeliveredBidTrace", trace.WithAttributes(
-
 		attribute.Int64("slot", int64(slot)),
+		attribute.Int64("limit", int64(limit)),
 	))
 	defer span.End()
 
 	started := time.Now()
 
-	url := fmt.Sprintf("/relay/v1/data/bidtraces/proposer_payload_delivered?slot=%d", slot)
+	var url string
+	if limit <= 0 {
+		url = fmt.Sprintf("/relay/v1/data/bidtraces/proposer_payload_delivered?slot=%d", slot)
+	} else {
+		url = fmt.Sprintf("/relay/v1/data/bidtraces/proposer_payload_delivered?cursor=%d&limit=%d", slot, limit)
+	}
 
 	contentType, respBodyReader, err := s.get(ctx, url)
 	if err != nil {
@@ -72,5 +78,5 @@ func (s *Service) DeliveredBidTrace(ctx context.Context, slot phase0.Slot) (*v1.
 
 	monitorOperation(s.Address(), "delivered bid trace", true, time.Since(started))
 
-	return res[0], nil
+	return res, nil
 }
