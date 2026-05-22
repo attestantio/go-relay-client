@@ -95,14 +95,14 @@ func (s *Service) DeliveredBidTracesCursor(ctx context.Context, cursor phase0.Sl
 	contentType, respBodyReader, err := s.get(ctx, url)
 	if err != nil {
 		log.Trace().Str("url", url).Err(err).Msg("Request failed")
-		monitorOperation(s.Address(), "delivered bid trace", false, time.Since(started))
+		monitorOperation(s.Address(), "delivered bid traces cursor", false, time.Since(started))
 
-		return nil, errors.Wrap(err, "failed to request delivered bid trace")
+		return nil, errors.Wrap(err, "failed to request delivered bid traces cursor")
 	}
 
 	if respBodyReader == nil {
-		monitorOperation(s.Address(), "delivered bid trace", false, time.Since(started))
-		return nil, errors.New("failed to obtain delivered bid trace")
+		monitorOperation(s.Address(), "delivered bid traces cursor", false, time.Since(started))
+		return nil, errors.New("failed to obtain delivered bid traces cursor")
 	}
 
 	res := make([]*v1.BidTrace, 0)
