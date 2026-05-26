@@ -114,7 +114,7 @@ func (b *BidTraceWithTimestamp) String() string {
 	return string(data)
 }
 
-func (b *BidTraceWithTimestamp) unpack(data *bidTraceWithTimestampJSON) error{
+func (b *BidTraceWithTimestamp) unpack(data *bidTraceWithTimestampJSON) error {
 	if data.Slot == "" {
 		return errors.New("slot missing")
 	}
