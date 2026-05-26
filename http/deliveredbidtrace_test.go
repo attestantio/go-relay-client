@@ -95,12 +95,10 @@ func TestDeliveredBidTracesCursor(t *testing.T) {
 				return
 			}
 			require.NoError(t, err)
-			require.NotNil(t, bidTraces)
 			require.LessOrEqual(t, len(bidTraces), test.numberSlots)
 			for _, trace := range bidTraces {
 				require.LessOrEqual(t, uint64(trace.Slot), test.upperSlot)
 			}
-			fmt.Printf("%v\n", bidTraces)
 		})
 	}
 }
