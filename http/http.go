@@ -30,7 +30,8 @@ import (
 	"go.opentelemetry.io/otel/trace"
 )
 
-// Get sends an HTTP get request and returns the body.
+//nolint:attgo,nolintlint // doc starts with the lowercase identifier per Go convention; get is unexported
+// get sends an HTTP get request and returns the body.
 // If the response from the server is a 404 this will return nil for both the reader and the error.
 func (s *Service) get(ctx context.Context, endpoint string) (ContentType, io.Reader, error) {
 	ctx, span := otel.Tracer("attestantio.go-relay-client.http").Start(ctx, "get")

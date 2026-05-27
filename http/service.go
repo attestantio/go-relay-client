@@ -145,5 +145,6 @@ func (s *Service) Pubkey() *phase0.BLSPubKey {
 	return s.pubkey
 }
 
-// Close closes the service, freeing up resources.
+//nolint:attgo,nolintlint // doc starts with the lowercase identifier per Go convention; close is unexported
+// close closes the service, freeing up resources.
 func (*Service) close() {}
