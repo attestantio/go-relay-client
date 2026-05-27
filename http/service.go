@@ -1,4 +1,4 @@
-// Copyright © 2022 - 2024 Attestant Limited.
+// Copyright © 2022 - 2026 Attestant Limited.
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
@@ -32,17 +32,15 @@ import (
 
 // Service is an Ethereum 2 client service.
 type Service struct {
+	log          zerolog.Logger
+	client       *http.Client
 	base         *url.URL
 	name         string
 	address      string
-	client       *http.Client
 	timeout      time.Duration
 	pubkey       *phase0.BLSPubKey
 	extraHeaders map[string]string
 }
-
-// log is a service-wide logger.
-var log zerolog.Logger
 
 // New creates a new builder client service, connecting with HTTP.
 func New(ctx context.Context, params ...Parameter) (builderclient.Service, error) {
@@ -52,7 +50,7 @@ func New(ctx context.Context, params ...Parameter) (builderclient.Service, error
 	}
 
 	// Set logging.
-	log = zerologger.With().Str("service", "client").Str("impl", "http").Logger()
+	log := zerologger.With().Str("service", "client").Str("impl", "http").Logger()
 	if parameters.logLevel != log.GetLevel() {
 		log = log.Level(parameters.logLevel)
 	}
@@ -90,6 +88,7 @@ func New(ctx context.Context, params ...Parameter) (builderclient.Service, error
 
 	// Obtain the public key from the URL's user.
 	var pubkey *phase0.BLSPubKey
+
 	if base.User != nil && base.User.Username() != "" {
 		key := phase0.BLSPubKey{}
 
@@ -111,10 +110,11 @@ func New(ctx context.Context, params ...Parameter) (builderclient.Service, error
 	}
 
 	s := &Service{
+		log:          log,
+		client:       client,
 		base:         base,
 		name:         name,
 		address:      base.String(),
-		client:       client,
 		timeout:      parameters.timeout,
 		pubkey:       pubkey,
 		extraHeaders: parameters.extraHeaders,
@@ -123,7 +123,7 @@ func New(ctx context.Context, params ...Parameter) (builderclient.Service, error
 	// Close the service on context done.
 	go func(s *Service) {
 		<-ctx.Done()
-		log.Trace().Msg("Context done; closing connection")
+		s.log.Trace().Msg("Context done; closing connection")
 		s.close()
 	}(s)
 
@@ -145,5 +145,6 @@ func (s *Service) Pubkey() *phase0.BLSPubKey {
 	return s.pubkey
 }
 
+//nolint:attgo,nolintlint // doc starts with the lowercase identifier per Go convention; close is unexported
 // close closes the service, freeing up resources.
 func (*Service) close() {}

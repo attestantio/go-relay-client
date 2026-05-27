@@ -1,4 +1,4 @@
-// Copyright © 2022 Attestant Limited.
+// Copyright © 2022 - 2026 Attestant Limited.
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
@@ -43,7 +43,6 @@ func registerMetrics(monitor metrics.Service) error {
 	return nil
 }
 
-// skipcq: RVV-B0012
 func registerPrometheusMetrics() error {
 	operationsCounter = prometheus.NewCounterVec(prometheus.CounterOpts{
 		Namespace: "eth_builder_client",
