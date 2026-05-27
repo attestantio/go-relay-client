@@ -200,6 +200,16 @@ linters:
             - fmt.Fprintf
           # Functions whose error returns must be explicitly checked
           # These functions can fail (e.g., write errors) and need error handling
+
+        - name: var-naming
+          arguments:
+            - [] # AllowList: no extra initialisms to allow
+            - [] # DenyList: no names to forbid
+            - - skipPackageNameChecks: true
+          # Configures variable/package naming checks
+          # skipPackageNameChecks: true — the http package name conflicts with the
+          # stdlib net/http but is part of this module's published API, so renaming
+          # is not feasible without a major version bump
     
     # --------------------------------------------------------------------------
     # lll: Line length linter

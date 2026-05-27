@@ -1,4 +1,4 @@
-// Copyright © 2022, 2023 Attestant Limited.
+// Copyright © 2022 - 2026 Attestant Limited.
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
@@ -30,14 +30,14 @@ import (
 	"go.opentelemetry.io/otel/trace"
 )
 
-// get sends an HTTP get request and returns the body.
+// Get sends an HTTP get request and returns the body.
 // If the response from the server is a 404 this will return nil for both the reader and the error.
 func (s *Service) get(ctx context.Context, endpoint string) (ContentType, io.Reader, error) {
 	ctx, span := otel.Tracer("attestantio.go-relay-client.http").Start(ctx, "get")
 	defer span.End()
 
 	// #nosec G404
-	log := log.With().Str("id", fmt.Sprintf("%02x", rand.Int31())).Str("endpoint", endpoint).Str("address", s.address).Logger()
+	log := s.log.With().Str("id", fmt.Sprintf("%02x", rand.Int31())).Str("endpoint", endpoint).Str("address", s.address).Logger()
 	log.Trace().Msg("GET request")
 
 	requestURL, err := url.Parse(fmt.Sprintf("%s%s", strings.TrimSuffix(s.base.String(), "/"), endpoint))

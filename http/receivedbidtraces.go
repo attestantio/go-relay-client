@@ -1,4 +1,4 @@
-// Copyright © 2022 Attestant Limited.
+// Copyright © 2022 - 2026 Attestant Limited.
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
@@ -41,7 +41,7 @@ func (s *Service) ReceivedBidTraces(ctx context.Context, slot phase0.Slot) ([]*v
 
 	contentType, respBodyReader, err := s.get(ctx, url)
 	if err != nil {
-		log.Trace().Str("url", url).Err(err).Msg("Request failed")
+		s.log.Trace().Str("url", url).Err(err).Msg("Request failed")
 		monitorOperation(s.Address(), "received bid traces", false, time.Since(started))
 
 		return nil, errors.Wrap(err, "failed to request received bid traces")
