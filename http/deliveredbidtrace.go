@@ -20,7 +20,7 @@ import (
 	"time"
 
 	"github.com/attestantio/go-eth2-client/spec/phase0"
-	v1 "github.com/attestantio/go-relay-client/api/v1"
+	"github.com/attestantio/go-relay-client/api/v1"
 	"github.com/pkg/errors"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
@@ -110,7 +110,7 @@ func (s *Service) DeliveredBidTracesCursor(ctx context.Context, cursor phase0.Sl
 	switch contentType {
 	case ContentTypeJSON:
 		if err := json.NewDecoder(respBodyReader).Decode(&res); err != nil {
-			return nil, errors.Wrap(err, "failed to parse delivered bid trace")
+			return nil, errors.Wrap(err, "failed to parse delivered bid traces cursor")
 		}
 	default:
 		return nil, fmt.Errorf("unsupported content type %v", contentType)
@@ -118,11 +118,11 @@ func (s *Service) DeliveredBidTracesCursor(ctx context.Context, cursor phase0.Sl
 
 	if len(res) == 0 {
 		// This means there was no delivered bid trace, but that's an acceptable response.
-		monitorOperation(s.Address(), "delivered bid trace", true, time.Since(started))
+		monitorOperation(s.Address(), "delivered bid traces cursor", true, time.Since(started))
 		return nil, nil
 	}
 
-	monitorOperation(s.Address(), "delivered bid trace", true, time.Since(started))
+	monitorOperation(s.Address(), "delivered bid traces cursor", true, time.Since(started))
 
 	return res, nil
 }
