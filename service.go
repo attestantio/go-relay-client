@@ -47,6 +47,9 @@ type DeliveredBidTraceProvider interface {
 	// DeliveredBidTrace provides a bid trace of a delivered payload for a given slot.
 	// Will return nil if the relay did not deliver a bid for the slot.
 	DeliveredBidTrace(ctx context.Context, slot phase0.Slot) (*v1.BidTrace, error)
+	// DeliveredBidTracesCursor is a similar method to the DeliveredBidTrace but allowing
+	// fetching multiple slots at a time (to optimize the querying of multiple slots at a time)
+	DeliveredBidTracesCursor(ctx context.Context, cursor phase0.Slot, limit int) ([]*v1.BidTrace, error)
 }
 
 // ReceivedBidTracesProvider is the interface for obtaining bid traces received by a relay.

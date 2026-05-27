@@ -19,6 +19,7 @@ import (
 	"os"
 	"testing"
 
+	"github.com/attestantio/go-eth2-client/spec/phase0"
 	client "github.com/attestantio/go-relay-client"
 	"github.com/attestantio/go-relay-client/http"
 	"github.com/stretchr/testify/require"
@@ -45,6 +46,59 @@ func TestDeliveredBidTrace(t *testing.T) {
 			require.NoError(t, err)
 			require.NotNil(t, bidTrace)
 			fmt.Printf("%v\n", bidTrace)
+		})
+	}
+}
+
+func TestDeliveredBidTracesCursor(t *testing.T) {
+	tests := []struct {
+		name        string
+		upperSlot   uint64
+		numberSlots int
+		expectErr   bool
+	}{
+		{
+			name:        "SingleSlot",
+			upperSlot:   4700906,
+			numberSlots: 1,
+		},
+		{
+			name:        "MultipleSlots",
+			upperSlot:   4700906,
+			numberSlots: 10,
+		},
+		{
+			name:        "ZeroLimit",
+			upperSlot:   4700906,
+			numberSlots: 0,
+			expectErr:   true,
+		},
+		{
+			name:        "NegativeLimit",
+			upperSlot:   4700906,
+			numberSlots: -1,
+			expectErr:   true,
+		},
+	}
+
+	service, err := http.New(context.Background(),
+		http.WithTimeout(timeout),
+		http.WithAddress(os.Getenv("HTTP_ADDRESS")),
+	)
+	require.NoError(t, err)
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			bidTraces, err := service.(client.DeliveredBidTraceProvider).DeliveredBidTracesCursor(context.Background(), phase0.Slot(test.upperSlot), test.numberSlots)
+			if test.expectErr {
+				require.Error(t, err)
+				return
+			}
+			require.NoError(t, err)
+			require.LessOrEqual(t, len(bidTraces), test.numberSlots)
+			for _, trace := range bidTraces {
+				require.LessOrEqual(t, uint64(trace.Slot), test.upperSlot)
+			}
 		})
 	}
 }

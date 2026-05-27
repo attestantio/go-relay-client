@@ -31,7 +31,7 @@ type QueuedProposer struct {
 
 // queuedProposerJSON is the spec representation of the struct.
 type queuedProposerJSON struct {
-	Slot  string                                     `json:"slot"`
+	Slot  string                                       `json:"slot"`
 	Entry *builderclientv1.SignedValidatorRegistration `json:"entry"`
 }
 
