@@ -14,18 +14,18 @@ jobs:
     name: lint
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
-      - uses: actions/setup-go@v5
+      - uses: actions/setup-go@v7
         with:
           cache: false
           go-version: "1.25"
 
       - name: Cache custom golangci-lint
         id: cache-custom-gcl
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: ./custom-gcl
           key: custom-gcl-${{ hashFiles('.custom-gcl.yml') }}
@@ -43,7 +43,7 @@ jobs:
           echo "$HOME/.local/bin" >> "$GITHUB_PATH"
 
       - name: golangci-lint
-        uses: golangci/golangci-lint-action@v8
+        uses: golangci/golangci-lint-action@v9
         with:
           install-mode: "none"
           args: "--timeout=60m"
